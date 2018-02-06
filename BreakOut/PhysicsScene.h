@@ -16,6 +16,7 @@ public:
 
 	void addActor(PhysicsObject* actor);
 	void removeActor(PhysicsObject* actor);
+	void debugScene();
 	void update(float deltaTime);
 	void draw();
 

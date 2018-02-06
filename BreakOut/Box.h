@@ -4,7 +4,7 @@ class Box :
 	public RigidBody
 {
 public:
-	Box(ShapeType shapeTypeID);
+	Box(glm::vec2 position, glm::vec2 velocity, float mass);
 	~Box();
 };
 

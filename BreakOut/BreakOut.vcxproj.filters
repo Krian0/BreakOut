@@ -55,7 +55,7 @@
       <Filter>Source Files\Physics\PhysicsObjects</Filter>
     </ClCompile>
     <ClCompile Include="Spring.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Physics\PhysicsObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -81,7 +81,7 @@
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Spring.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Physics\PhysicsObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

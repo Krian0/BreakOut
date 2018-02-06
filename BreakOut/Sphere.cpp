@@ -19,10 +19,9 @@ void Sphere::draw()
 	aie::Gizmos::add2DCircle(m_position, m_radius, 32, m_colour);
 }
 
-bool Sphere::checkCollision(PhysicsObject* otherObject)
+bool Sphere::checkCollision(PhysicsObject* otherActor)
 {
-	Sphere* object2 = dynamic_cast<Sphere*>(otherObject);
-	
-	if (object2 != nullptr)
-		return glm::distance(m_position, object2->m_position) < (m_radius + object2->m_radius);
+	Sphere* spherePointer;
+	if ((spherePointer = dynamic_cast<Sphere*>(otherActor)) != nullptr)
+		return glm::distance(m_position, spherePointer->m_position) < (m_radius + spherePointer->m_radius);
 }

@@ -2,6 +2,8 @@
 #include "Texture.h"
 #include "Font.h"
 #include "Input.h"
+#include "Sphere.h"
+
 #include <glm\ext.hpp>
 #include <Gizmos.h>
 
@@ -23,7 +25,14 @@ bool BreakOutApp::startup()
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);		//TODO: remember to change this when redistributing a build! The following path would be used instead: "./font/consolas.ttf"
 
 	m_physicsScene = new PhysicsScene();
+	m_physicsScene->setGravity(glm::vec2(0, 0));
 	m_physicsScene->setTimeStep(0.01f);
+
+	//Sphere* ball;
+	//ball = new Sphere(glm::vec2(0, -30), glm::vec2(0, 5), 0.01f, 4, glm::vec4(1, 0, 0, 1));
+	//m_physicsScene->addActor(ball);
+
+	setupConinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
 
 	return true;
 }
@@ -39,7 +48,7 @@ void BreakOutApp::update(float deltaTime)
 	aie::Input* input = aie::Input::getInstance();
 
 
-	aie::Gizmos::clear();
+	//aie::Gizmos::clear();
 
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->draw();
@@ -95,4 +104,26 @@ void BreakOutApp::draw()
 	
 	m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
 	m_2dRenderer->end();
+}
+
+
+
+void BreakOutApp::setupConinuousDemo(glm::vec2 startPos, float inclination, float speed, float gravity)
+{
+	float t = 0; 
+	float tStep = 0.5f; 
+	float radius = 1.0f; 
+	int segments = 12; 
+	glm::vec4 colour = glm::vec4(1, 1, 0, 1); 
+	
+	while (t <= 5) 
+	{ 
+		// calculate the x, y position of the projectile at time t 
+
+		float x = startPos.x + (speed * t);
+		float y = startPos.y + (speed * t) + (speed - speed) * t; //Nice job not explaining what 1/2 is, slides. Half of time? speed - speed (or grav - grav) * time is just 0 * time. it's nothing.
+
+		aie::Gizmos::add2DCircle(glm::vec2(x, y), radius, segments, colour); 
+		t += tStep; 
+	} 
 }
