@@ -79,3 +79,33 @@ void PhysicsScene::draw()
 	for (auto anActor : m_actors)
 		anActor->draw();
 }
+
+typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
+static fn collisionFunctionArray[] =
+{
+	PhysicsScene::planePlane,		PhysicsScene::planeSphere,
+	PhysicsScene::sphereSphere,		PhysicsScene::spherePlane
+};
+
+void PhysicsScene::checkForCollision()
+{
+	int actorCount = m_actors.size();
+
+	for (auto it = m_actors.begin(); it != m_actors.end(); it++)
+	{
+		PhysicsObject* ob1 = *it;
+		for (auto it2 = std::next(it); it2 != m_actors.end(); it2++)
+		{
+			
+			PhysicsObject* ob2 = *it2;
+			int shapeID1 = ob1->getShapeID();
+			int shapeID2 = ob2->getShapeID();
+
+			int functionIDx = (shapeID1 * NULLSHAPE) + shapeID2;
+			fn collisionFunctionPtr = collisionFunctionArray[functionIDx];
+
+			if (collisionFunctionPtr != nullptr)
+				collisionFunctionPtr(ob1, ob2);
+		}
+	}
+}

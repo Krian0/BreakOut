@@ -20,6 +20,14 @@ public:
 	void update(float deltaTime);
 	void draw();
 
+	void checkForCollision();
+
+	static bool planePlane (PhysicsObject*, PhysicsObject*);
+	static bool planeSphere (PhysicsObject*, PhysicsObject*);
+	static bool sphereSphere (PhysicsObject*, PhysicsObject*);
+	static bool spherePlane (PhysicsObject*, PhysicsObject*);
+
+
 	void setGravity(const glm::vec2 gravity) { m_gravity = gravity; }
 	glm::vec2 getGravity() const { return m_gravity; }
 
