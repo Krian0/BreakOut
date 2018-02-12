@@ -1,9 +1,13 @@
 #pragma once
-#include "PhysicsObject.h"
 #include <glm\vec2.hpp>
 #include <list>
+#include <utility>
+
+#include "PhysicsObject.h"
 
 using std::list;
+using std::pair;
+using std::make_pair;
 
 
 class PhysicsScene
@@ -20,12 +24,20 @@ public:
 	void update(float deltaTime);
 	void draw();
 
-	void checkForCollision();
+	//bool isValidPair(list<pair<int, int>> pairList, int index1, int index2);
+	static bool planePlane(PhysicsObject*, PhysicsObject*);
+	static bool planeSphere(PhysicsObject*, PhysicsObject*);
+	static bool planeBox(PhysicsObject*, PhysicsObject*);
+	
+	static bool sphereSphere(PhysicsObject*, PhysicsObject*);
+	static bool sphereBox(PhysicsObject*, PhysicsObject*);
+	static bool spherePlane(PhysicsObject*, PhysicsObject*);
+	
+	static bool boxBox(PhysicsObject*, PhysicsObject*);
+	static bool boxSphere(PhysicsObject*, PhysicsObject*);
+	static bool boxPlane(PhysicsObject*, PhysicsObject*);
 
-	static bool planePlane (PhysicsObject*, PhysicsObject*);
-	static bool planeSphere (PhysicsObject*, PhysicsObject*);
-	static bool sphereSphere (PhysicsObject*, PhysicsObject*);
-	static bool spherePlane (PhysicsObject*, PhysicsObject*);
+	void checkForCollision();
 
 
 	void setGravity(const glm::vec2 gravity) { m_gravity = gravity; }
@@ -36,6 +48,8 @@ public:
 
 
 protected:
+	glm::vec2 getNormalAxis(glm::vec2 corner1, glm::vec2 corner2);
+
 	glm::vec2 m_gravity;
 	list<PhysicsObject*> m_actors;
 	float m_timeStep;

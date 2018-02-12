@@ -1,11 +1,16 @@
-#include <utility>
+#include <glm\ext.hpp>
 #include <iostream>
+#include <vector>
 
 #include "PhysicsScene.h"
 #include "RigidBody.h"
+#include "Sphere.h"
+#include "Box.h"
+#include "Plane.h"
+#include "Spring.h"
 
-using std::pair;
-using std::make_pair;
+using std::vector;
+
 
 PhysicsScene::PhysicsScene() : m_timeStep(0.01f), m_gravity(glm::vec2(0, 0)) {}
 PhysicsScene::~PhysicsScene() 
@@ -49,28 +54,23 @@ void PhysicsScene::update(float deltaTime)
 		accumulatedTime -= m_timeStep;
 
 
-		list<pair<PhysicsObject*, PhysicsObject*>> collisionPairs;
-		for (auto anActor : m_actors)
-		{
-			for (auto otherActor : m_actors)
-			{
-				if (anActor == otherActor)
-					continue;
+		checkForCollision();
+		//list<pair<int, int>> pairs;
+		//int indexA, indexB = 0;
+		//for (auto actor1 : m_actors)
+		//{
+		//	RigidBody* rb1 = dynamic_cast<RigidBody*>(actor1);
+		//	for (auto actor2 : m_actors)
+		//	{
+		//		if (isValidPair(pairs, indexA, indexB) && rb1->checkCollision(actor2) == true)
+		//			rb1->applyForceToActor(dynamic_cast<RigidBody*>(actor2), rb1->getForce());
+		//		
+		//		indexB++;
+		//	}
+		//	indexA++;
+		//}
 
-				for (auto addedPair : collisionPairs)
-					if (addedPair == make_pair(anActor, otherActor) || addedPair == make_pair(otherActor, anActor))
-						continue;
-
-				RigidBody* rbActor = dynamic_cast<RigidBody*>(anActor);
-				if (rbActor->checkCollision(otherActor) == true)
-				{
-					collisionPairs.push_back(make_pair(anActor, otherActor));
-					rbActor->applyForceToActor(dynamic_cast<RigidBody*>(otherActor), rbActor->getForce());
-				}
-			}
-		}
-
-		collisionPairs.clear();
+		//pairs.clear();
 	}
 }
 
@@ -80,32 +80,168 @@ void PhysicsScene::draw()
 		anActor->draw();
 }
 
+
+//bool PhysicsScene::isValidPair(list<pair<int, int>> pairList, int index1, int index2)
+//{
+//	if (index1 == index2)
+//		return false;
+//
+//	pair<int, int> indexPair1(index1, index2);
+//	pair<int, int> indexPair2(index2, index1);
+//	
+//	for (auto addedPair : pairList)
+//		if (addedPair == indexPair1 || addedPair == indexPair2)
+//			return false;
+//
+//	pairList.push_back(indexPair1);
+//	return true;
+//}
+
+
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
+
 static fn collisionFunctionArray[] =
 {
-	PhysicsScene::planePlane,		PhysicsScene::planeSphere,
-	PhysicsScene::sphereSphere,		PhysicsScene::spherePlane
+	PhysicsScene::planePlane,	PhysicsScene::planeSphere,	PhysicsScene::planeBox,	
+	PhysicsScene::sphereSphere,	PhysicsScene::sphereBox,	PhysicsScene::spherePlane,
+	PhysicsScene::boxBox,		PhysicsScene::boxSphere,	PhysicsScene::boxPlane
 };
+
+
+bool PhysicsScene::planePlane(PhysicsObject* plane_1, PhysicsObject* plane_2)
+{
+	return false;
+}
+
+bool PhysicsScene::planeSphere(PhysicsObject* plane, PhysicsObject* sphere)
+{
+	return spherePlane(sphere, plane);
+}
+
+bool PhysicsScene::planeBox(PhysicsObject* plane, PhysicsObject* box)
+{
+	return false;
+}
+
+bool PhysicsScene::sphereSphere(PhysicsObject* sphere_1, PhysicsObject* sphere_2)
+{
+	Sphere* s1 = dynamic_cast<Sphere*>(sphere_1);
+	Sphere* s2 = dynamic_cast<Sphere*>(sphere_2);
+
+	if (s1 != nullptr && s2 != nullptr)
+	{
+		if (glm::distance(s1->getPosition(), s2->getPosition()) <= (s1->getRadius() + s2->getRadius()))
+		{
+			s1->resetVelocity();
+			s2->resetVelocity();
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool PhysicsScene::sphereBox(PhysicsObject* sphere, PhysicsObject* box)
+{
+	return false;
+}
+
+bool PhysicsScene::spherePlane(PhysicsObject* sphere, PhysicsObject* plane)
+{
+	Sphere* s = dynamic_cast<Sphere*>(sphere);
+	Plane* p = dynamic_cast<Plane*>(plane);
+
+	if (s != nullptr && p != nullptr)
+	{
+		glm::vec2 collisionNormal = p->getNormal();
+		float sphereToPlane = glm::dot(s->getPosition(), p->getNormal() - p->getDistance());
+
+		if (sphereToPlane < 0)
+		{
+			collisionNormal *= -1;
+			sphereToPlane *= -1;
+		}
+
+		if ((s->getRadius() - sphereToPlane) > 0)
+		{
+			s->resetVelocity();
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool PhysicsScene::boxBox(PhysicsObject* box_1, PhysicsObject* box_2)
+{
+	Box* b1 = dynamic_cast<Box*>(box_1);
+	Box* b2 = dynamic_cast<Box*>(box_2);
+
+	vector<glm::vec2> cornersBox1;
+	vector<glm::vec2> cornersBox2;
+	int axesToTest = 4;
+
+	if (b1->getRotation() == b2->getRotation())
+		axesToTest = 2;
+
+	for (unsigned int i = 0; i < axesToTest + 1; i++)
+	{
+		cornersBox1.push_back(b1->getCorner(i));
+		if (axesToTest == 4)
+			cornersBox2.push_back(b2->getCorner(i));
+	}
+
+	for (int i = 0; i < axesToTest; i++)
+	{
+		glm::vec2 axis((cornersBox1[i + 1].y - cornersBox1[i].y), -(cornersBox1[i + 1].x - cornersBox1[i].x));
+
+		//proj.x = (dp / (b.x*b.x + b.y*b.y)) * b.x;
+		//proj.y = (dp / (b.x*b.x + b.y*b.y)) * b.y;
+
+		//where dp is the dotprod of a and b: dp = (a.x*b.x + a.y*b.y)
+
+		//	Note that the result is a vector; also, (b.x*b.x + b.y*b.y) is simply the length of b squared.
+
+		//	If b is a unit vector, (b.x*b.x + b.y*b.y) = 1, and thus a projected onto b reduces to :
+
+		//proj.x = dp*b.x;
+		//proj.y = dp*b.y;
+	}
+
+
+	return true;
+}
+
+bool PhysicsScene::boxSphere(PhysicsObject* box, PhysicsObject* sphere)
+{
+	return false;
+}
+
+bool PhysicsScene::boxPlane(PhysicsObject* box, PhysicsObject* plane)
+{
+	return false;
+}
+
 
 void PhysicsScene::checkForCollision()
 {
-	int actorCount = m_actors.size();
-
 	for (auto it = m_actors.begin(); it != m_actors.end(); it++)
 	{
-		PhysicsObject* ob1 = *it;
+		PhysicsObject* actor1 = *it;
 		for (auto it2 = std::next(it); it2 != m_actors.end(); it2++)
 		{
-			
-			PhysicsObject* ob2 = *it2;
-			int shapeID1 = ob1->getShapeID();
-			int shapeID2 = ob2->getShapeID();
-
-			int functionIDx = (shapeID1 * NULLSHAPE) + shapeID2;
+			PhysicsObject* actor2 = *it2;
+			int functionIDx = (actor1->getShapeID() * SHAPE_COUNT) + actor2->getShapeID();
 			fn collisionFunctionPtr = collisionFunctionArray[functionIDx];
 
 			if (collisionFunctionPtr != nullptr)
-				collisionFunctionPtr(ob1, ob2);
+				collisionFunctionPtr(actor1, actor2);
 		}
 	}
+}
+
+glm::vec2 PhysicsScene::getNormalAxis(glm::vec2 corner1, glm::vec2 corner2)
+{
+	return glm::vec2((corner2.y - corner1.y), -(corner2.x - corner1.x));
 }

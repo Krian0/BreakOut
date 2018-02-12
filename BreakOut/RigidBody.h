@@ -15,7 +15,7 @@ public:
 	void applyForce(glm::vec2 force);
 	void applyForceToActor(RigidBody* actor2, glm::vec2 force);
 
-	virtual bool checkCollision(PhysicsObject* otherObject) = 0;
+	//virtual bool checkCollision(PhysicsObject* otherObject) = 0;
 
 	glm::vec2 getPosition() { return m_position; }
 	glm::vec2 getVelocity() { return m_velocity; }

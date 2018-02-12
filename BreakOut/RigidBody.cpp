@@ -1,17 +1,9 @@
 #include "RigidBody.h"
 
 
-
 RigidBody::RigidBody(ShapeType shapeTypeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass)
-	: PhysicsObject(shapeTypeID), m_position(position), m_velocity(velocity), m_rotation(rotation), m_mass(mass)
-{
-
-}
-
-
-RigidBody::~RigidBody()
-{
-}
+	: PhysicsObject(shapeTypeID), m_position(position), m_velocity(velocity), m_rotation(rotation), m_mass(mass) {}
+RigidBody::~RigidBody() {}
 
 
 void RigidBody::applyForce(glm::vec2 force)

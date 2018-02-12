@@ -1,5 +1,3 @@
-#include <glm\ext.hpp>
-
 #include "Sphere.h"
 
 
@@ -24,9 +22,7 @@ void Sphere::draw()
 	aie::Gizmos::add2DCircle(m_position, m_radius, 32, m_colour);
 }
 
-bool Sphere::checkCollision(PhysicsObject* otherActor)
+void Sphere::resetVelocity()
 {
-	Sphere* spherePointer;
-	if ((spherePointer = dynamic_cast<Sphere*>(otherActor)) != nullptr)
-		return glm::distance(m_position, spherePointer->m_position) < (m_radius + spherePointer->m_radius);
+	m_velocity = glm::vec2(0, 0);
 }

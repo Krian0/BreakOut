@@ -11,7 +11,7 @@ public:
 	~Sphere();
 
 	virtual void draw();
-	virtual bool checkCollision(PhysicsObject* otherActor);
+	void resetVelocity();
 
 	float getRadius() { return m_radius; }
 	glm::vec4 getColour() { return m_colour; }
@@ -22,4 +22,3 @@ protected:
 	float m_radius;
 
 };
-

@@ -25,14 +25,12 @@ bool BreakOutApp::startup()
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);		//TODO: remember to change this when redistributing a build! The following path would be used instead: "./font/consolas.ttf"
 
 	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setGravity(glm::vec2(0, -10));
+	m_physicsScene->setGravity(glm::vec2(0, 0));
 	m_physicsScene->setTimeStep(0.01f);
 
 	Sphere* ball;
-	ball = new Sphere(glm::vec2(0, -40), glm::vec2(40, 5), 0.01f, 4, glm::vec4(1, 0, 0, 1));
+	ball = new Sphere(glm::vec2(0, 40), glm::vec2(0, 0), 0.01f, 10, glm::vec4(1, 0, 0, 1));
 	m_physicsScene->addActor(ball);
-
-	setupContinuousDemo(glm::vec2(-40, 0), 45, 40, -10);
 	
 	return true;
 }
@@ -48,7 +46,7 @@ void BreakOutApp::update(float deltaTime)
 	aie::Input* input = aie::Input::getInstance();
 
 
-	//aie::Gizmos::clear();
+	aie::Gizmos::clear();
 
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->draw();
@@ -110,21 +108,21 @@ void BreakOutApp::draw()
 
 void BreakOutApp::setupContinuousDemo(glm::vec2 startPos, float angle, float speed, float gravity)
 {
-	float t = 0; 
-	float tStep = 0.5f; 
-	float radius = 1.0f; 
-	int segments = 12; 
-	glm::vec4 colour = glm::vec4(1, 1, 0, 1); 
-	
-	float angleInRad = angle * 3.14159f / 180.0f;
-	glm::vec2 initialVelocity(cosf(angleInRad) * speed, sinf(angleInRad) * speed);
-	while (t <= 5) 
-	{ 
-		float Dx = startPos.x + (initialVelocity.x * t);
-		float Dy = startPos.y + (initialVelocity.y * t) + ((gravity * (t * t)) / 2);
+	//float t = 0; 
+	//float tStep = 0.5f; 
+	//float radius = 1.0f; 
+	//int segments = 12; 
+	//glm::vec4 colour = glm::vec4(1, 1, 0, 1); 
+	//
+	//float angleInRad = angle * 3.14159f / 180.0f;
+	//glm::vec2 initialVelocity(cosf(angleInRad) * speed, sinf(angleInRad) * speed);
+	//while (t <= 5) 
+	//{ 
+	//	float Dx = startPos.x + (initialVelocity.x * t);
+	//	float Dy = startPos.y + (initialVelocity.y * t) + ((gravity * (t * t)) / 2);
 
 
-		aie::Gizmos::add2DCircle(glm::vec2(Dx, Dy), radius, segments, colour); 
-		t += tStep;
-	} 
+	//	aie::Gizmos::add2DCircle(glm::vec2(Dx, Dy), radius, segments, colour); 
+	//	t += tStep;
+	//} 
 }

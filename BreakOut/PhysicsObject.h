@@ -9,7 +9,7 @@ enum ShapeType
 	SPHERE,
 	BOX,
 	SPRING,
-	NULLSHAPE
+	SHAPE_COUNT
 };
 
 class PhysicsObject
@@ -29,7 +29,5 @@ public:
 	virtual void draw() = 0;
 	virtual void resetPosition() {};
 
-	ShapeType getShapeID();
-
+	ShapeType getShapeID() { return m_shapeID; }
 };
-
