@@ -17,6 +17,11 @@ Sphere::~Sphere()
 }
 
 
+void Sphere::fixedUpdate(glm::vec2 gravity, float timeStep)
+{
+	RigidBody::fixedUpdate(gravity, timeStep);
+}
+
 void Sphere::draw()
 {
 	aie::Gizmos::add2DCircle(m_position, m_radius, 32, m_colour);

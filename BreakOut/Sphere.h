@@ -10,6 +10,7 @@ public:
 	Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour);
 	~Sphere();
 
+	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
 	virtual void draw();
 	void resetVelocity();
 

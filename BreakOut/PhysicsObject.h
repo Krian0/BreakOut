@@ -8,8 +8,8 @@ enum ShapeType
 	PLANE = 0,
 	SPHERE,
 	BOX,
-	SPRING,
-	SHAPE_COUNT
+	SHAPE_COUNT,
+	SPRING
 };
 
 class PhysicsObject

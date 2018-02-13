@@ -103,8 +103,8 @@ typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
 static fn collisionFunctionArray[] =
 {
 	PhysicsScene::planePlane,	PhysicsScene::planeSphere,	PhysicsScene::planeBox,	
-	PhysicsScene::sphereSphere,	PhysicsScene::sphereBox,	PhysicsScene::spherePlane,
-	PhysicsScene::boxBox,		PhysicsScene::boxSphere,	PhysicsScene::boxPlane
+	PhysicsScene::spherePlane,  PhysicsScene::sphereSphere,	PhysicsScene::sphereBox,	
+	PhysicsScene::boxPlane,		PhysicsScene::boxBox,		PhysicsScene::boxSphere	
 };
 
 
@@ -132,8 +132,9 @@ bool PhysicsScene::sphereSphere(PhysicsObject* sphere_1, PhysicsObject* sphere_2
 	{
 		if (glm::distance(s1->getPosition(), s2->getPosition()) <= (s1->getRadius() + s2->getRadius()))
 		{
-			s1->resetVelocity();
-			s2->resetVelocity();
+			//s1->resetVelocity();
+			//s2->resetVelocity();
+			s1->resolveCollision(s2);
 
 			return true;
 		}
@@ -155,7 +156,7 @@ bool PhysicsScene::spherePlane(PhysicsObject* sphere, PhysicsObject* plane)
 	if (s != nullptr && p != nullptr)
 	{
 		glm::vec2 collisionNormal = p->getNormal();
-		float sphereToPlane = glm::dot(s->getPosition(), p->getNormal() - p->getDistance());
+		float sphereToPlane = glm::dot(s->getPosition(), p->getNormal()) - p->getDistance();
 
 		if (sphereToPlane < 0)
 		{
@@ -165,7 +166,8 @@ bool PhysicsScene::spherePlane(PhysicsObject* sphere, PhysicsObject* plane)
 
 		if ((s->getRadius() - sphereToPlane) > 0)
 		{
-			s->resetVelocity();
+			//s->resetVelocity();
+			p->resolveCollision(s, collisionNormal);
 			return true;
 		}
 	}
@@ -178,23 +180,15 @@ bool PhysicsScene::boxBox(PhysicsObject* box_1, PhysicsObject* box_2)
 	Box* b1 = dynamic_cast<Box*>(box_1);
 	Box* b2 = dynamic_cast<Box*>(box_2);
 
-	vector<glm::vec2> cornersBox1;
-	vector<glm::vec2> cornersBox2;
-	int axesToTest = 4;
+	vector<glm::vec2> axesToTestVec;
+	axesToTestVec.push_back(b1->getLocalXAxis());
+	axesToTestVec.push_back(b1->getLocalYAxis());
 
 	if (b1->getRotation() == b2->getRotation())
-		axesToTest = 2;
-
-	for (unsigned int i = 0; i < axesToTest + 1; i++)
 	{
-		cornersBox1.push_back(b1->getCorner(i));
-		if (axesToTest == 4)
-			cornersBox2.push_back(b2->getCorner(i));
+		axesToTestVec.push_back(b2->getLocalXAxis());
+		axesToTestVec.push_back(b2->getLocalYAxis());
 	}
-
-	for (int i = 0; i < axesToTest; i++)
-	{
-		glm::vec2 axis((cornersBox1[i + 1].y - cornersBox1[i].y), -(cornersBox1[i + 1].x - cornersBox1[i].x));
 
 		//proj.x = (dp / (b.x*b.x + b.y*b.y)) * b.x;
 		//proj.y = (dp / (b.x*b.x + b.y*b.y)) * b.y;
@@ -207,7 +201,6 @@ bool PhysicsScene::boxBox(PhysicsObject* box_1, PhysicsObject* box_2)
 
 		//proj.x = dp*b.x;
 		//proj.y = dp*b.y;
-	}
 
 
 	return true;

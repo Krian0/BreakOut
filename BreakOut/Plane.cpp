@@ -1,11 +1,12 @@
 #include "Plane.h"
+#include<glm\ext.hpp>
 
 Plane::Plane() : PhysicsObject(PLANE), m_normal(glm::vec2(0, 0)), m_distanceFromOrigin(0) 
 { 
 	m_colour = glm::vec4(0, 0, 1, 1); 
 	m_shapeTypeColour = glm::vec4(0, 1, 1, 1);
 }
-Plane::Plane(glm::vec2 normal, float distance, glm::vec4 colour) : PhysicsObject(PLANE), m_normal(normal), m_distanceFromOrigin(distance) 
+Plane::Plane(glm::vec2 normal, float distance, glm::vec4 colour) : PhysicsObject(PLANE), m_normal(glm::normalize(normal)), m_distanceFromOrigin(distance) 
 { 
 	m_colour = colour;
 	m_shapeTypeColour = glm::vec4(0, 1, 1, 1);
@@ -35,4 +36,14 @@ void Plane::resetNormal()
 void Plane::resetPosition()
 {
 	m_distanceFromOrigin = 0;
+}
+
+void Plane::resolveCollision(RigidBody * actor2, glm::vec2 planeNormal)
+{
+	glm::vec2 relativeVelocity = actor2->getVelocity();
+	if (glm::dot(planeNormal, relativeVelocity) > 0)
+		return;
+
+	float elasticity = (m_bounciness + actor2->getBounciness()) / 2.0f;
+	actor2->applyForce((-(1 + elasticity) * glm::dot(relativeVelocity, planeNormal) * planeNormal) * actor2->getMass());
 }
