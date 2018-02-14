@@ -15,9 +15,11 @@ public:
 	virtual void debug() {}
 	virtual void resetNormal();
 	virtual void resetPosition();
-	void resolveCollision(RigidBody* actor2, glm::vec2 planeNormal);
+	
+	bool resolveCollision(RigidBody* actor2, glm::vec2 contact);
 
 	glm::vec2 getNormal() { return m_normal; }
+	glm::vec2 getFlippedNormal() { return glm::vec2(m_normal.x * -1, m_normal.y * -1); }
 	float getDistance() { return m_distanceFromOrigin; }
 	float getBounciness() { return m_bounciness; }
 

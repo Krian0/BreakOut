@@ -127,18 +127,11 @@ bool PhysicsScene::sphereSphere(PhysicsObject* sphere_1, PhysicsObject* sphere_2
 {
 	Sphere* s1 = dynamic_cast<Sphere*>(sphere_1);
 	Sphere* s2 = dynamic_cast<Sphere*>(sphere_2);
+	if (s1 == nullptr || s2 == nullptr) return false;
 
-	if (s1 != nullptr && s2 != nullptr)
-	{
-		if (glm::distance(s1->getPosition(), s2->getPosition()) <= (s1->getRadius() + s2->getRadius()))
-		{
-			//s1->resetVelocity();
-			//s2->resetVelocity();
-			s1->resolveCollision(s2);
 
-			return true;
-		}
-	}
+	if (glm::distance(s1->getPosition(), s2->getPosition()) <= (s1->getRadius() + s2->getRadius()))
+		return s1->resolveCollision(s2, (s1->getPosition() + s2->getPosition()) * 0.5f);
 
 	return false;
 }
@@ -152,25 +145,15 @@ bool PhysicsScene::spherePlane(PhysicsObject* sphere, PhysicsObject* plane)
 {
 	Sphere* s = dynamic_cast<Sphere*>(sphere);
 	Plane* p = dynamic_cast<Plane*>(plane);
+	if (s == nullptr || p == nullptr) return false;
 
-	if (s != nullptr && p != nullptr)
-	{
-		glm::vec2 collisionNormal = p->getNormal();
-		float sphereToPlane = glm::dot(s->getPosition(), p->getNormal()) - p->getDistance();
 
-		if (sphereToPlane < 0)
-		{
-			collisionNormal *= -1;
-			sphereToPlane *= -1;
-		}
-
-		if ((s->getRadius() - sphereToPlane) > 0)
-		{
-			//s->resetVelocity();
-			p->resolveCollision(s, collisionNormal);
-			return true;
-		}
-	}
+	float sphereToPlane = glm::dot(s->getPosition(), p->getNormal()) - p->getDistance();
+	glm::vec2 contact = sphereToPlane < 0	?	s->getPosition() + (p->getFlippedNormal() * -s->getRadius())	:	s->getPosition() + (p->getNormal() * -s->getRadius());
+	if (sphereToPlane < 0)	sphereToPlane *= -1;
+		
+	if ((s->getRadius() - sphereToPlane) > 0)
+		return (p->resolveCollision(s, contact));
 
 	return false;
 }

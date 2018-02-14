@@ -1,15 +1,17 @@
 #include "Plane.h"
 #include<glm\ext.hpp>
 
-Plane::Plane() : PhysicsObject(PLANE), m_normal(glm::vec2(0, 0)), m_distanceFromOrigin(0) 
+Plane::Plane() : PhysicsObject(PLANE, true), m_normal(glm::vec2(0, 0)), m_distanceFromOrigin(0) 
 { 
 	m_colour = glm::vec4(0, 0, 1, 1); 
 	m_shapeTypeColour = glm::vec4(0, 1, 1, 1);
+	m_bounciness = 1.0f;
 }
-Plane::Plane(glm::vec2 normal, float distance, glm::vec4 colour) : PhysicsObject(PLANE), m_normal(glm::normalize(normal)), m_distanceFromOrigin(distance) 
+Plane::Plane(glm::vec2 normal, float distance, glm::vec4 colour) : PhysicsObject(PLANE, true), m_normal(glm::normalize(normal)), m_distanceFromOrigin(distance) 
 { 
 	m_colour = colour;
 	m_shapeTypeColour = glm::vec4(0, 1, 1, 1);
+	m_bounciness = 1.0f;
 }
 
 Plane::~Plane() {}
@@ -38,12 +40,10 @@ void Plane::resetPosition()
 	m_distanceFromOrigin = 0;
 }
 
-void Plane::resolveCollision(RigidBody * actor2, glm::vec2 planeNormal)
+bool Plane::resolveCollision(RigidBody * actor2, glm::vec2 contact)
 {
-	glm::vec2 relativeVelocity = actor2->getVelocity();
-	if (glm::dot(planeNormal, relativeVelocity) > 0)
-		return;
-
 	float elasticity = (m_bounciness + actor2->getBounciness()) / 2.0f;
-	actor2->applyForce((-(1 + elasticity) * glm::dot(relativeVelocity, planeNormal) * planeNormal) * actor2->getMass());
+	glm::vec2 force = m_normal * (glm::dot(-(1 + elasticity) * actor2->getVelocity(), m_normal) / (1 / actor2->getMass()));
+
+	return actor2->applyForce(force, contact - actor2->getPosition());
 }

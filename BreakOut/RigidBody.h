@@ -7,15 +7,15 @@ class RigidBody : public PhysicsObject
 
 public:
 
-	RigidBody(ShapeType shapeTypeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float linearDrag = 0.3f, float rotationalDrag = 0.3f);
+	RigidBody(ShapeType shapeTypeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float linearDrag = 0.3f, float rotationalDrag = 0.3f, bool isStatic = false);
 	~RigidBody();
 
 	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
 	virtual void debug();
 
-	void applyForce(glm::vec2 force);
-	void applyForceToActor(RigidBody* actor2, glm::vec2 force);
-	void resolveCollision(RigidBody* actor2);
+	bool applyForce(glm::vec2 force, glm::vec2 pos);
+	bool applyForceToActor(RigidBody* actor2, glm::vec2 force, glm::vec2 pos);
+	bool resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2* collisionNormal = nullptr);
 
 	void setLinearDrag(float drag);
 	void setRotationalDrag(float drag);
@@ -35,12 +35,12 @@ protected:
 	glm::vec2 m_velocity;
 	float m_rotationalVelocity;
 	float m_rotation;
+	float m_inertia;
 	float m_mass;
 	float m_bounciness;
 	float m_linearDrag;
 	float m_rotationalDrag;
 
-const float MIN_LINEAR_THRESHOLD = 0.1;
-const float	MIN_ROTATION_THRESHOLD = 0.1;
+const float MIN_LINEAR_THRESHOLD = 0.1f;
+const float	MIN_ROTATION_THRESHOLD = 0.1f;
 };
-

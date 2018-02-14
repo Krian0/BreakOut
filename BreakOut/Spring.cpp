@@ -2,7 +2,7 @@
 
 
 
-Spring::Spring(ShapeType shapeTypeID) : PhysicsObject(shapeTypeID)
+Spring::Spring(ShapeType shapeTypeID) : PhysicsObject(shapeTypeID, true)
 {
 
 }

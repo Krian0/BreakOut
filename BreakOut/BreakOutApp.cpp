@@ -35,8 +35,8 @@ bool BreakOutApp::startup()
 	Sphere* ball4 = new Sphere(glm::vec2(28, -20), glm::vec2(10, 50), 0.04f, 3, glm::vec4(1, 0, 0, 1));
 	
 	Plane* ground = new Plane(glm::vec2(0, -1), 50, glm::vec4(0, 0, 1, 1));
-	Plane* sideLeft = new Plane(glm::vec2(-1, 0), 30, glm::vec4(0, 0, 1, 1));
-	Plane* sideRight = new Plane(glm::vec2(1, 0), 30, glm::vec4(0, 0, 1, 1));
+	Plane* sideLeft = new Plane(glm::vec2(-1, 0), 40, glm::vec4(0, 0, 1, 1));
+	Plane* sideRight = new Plane(glm::vec2(1, 0), 40, glm::vec4(0, 0, 1, 1));
 	Plane* sky = new Plane(glm::vec2(0, 1), 50, glm::vec4(0, 0, 1, 1));
 
 	m_physicsScene->addActor(ball1);

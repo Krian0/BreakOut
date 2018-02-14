@@ -16,11 +16,12 @@ class PhysicsObject
 {
 
 protected:
-	PhysicsObject(ShapeType shapeTypeID) : m_shapeID(shapeTypeID) {}
+	PhysicsObject(ShapeType shapeTypeID, bool isStatic) : m_shapeID(shapeTypeID), m_isStatic(isStatic) {}
 
 	ShapeType m_shapeID;
 	glm::vec4 m_shapeTypeColour;
 	glm::vec4 m_colour;
+	bool m_isStatic;
 
 public:
 
@@ -30,4 +31,5 @@ public:
 	virtual void resetPosition() {};
 
 	ShapeType getShapeID() { return m_shapeID; }
+	bool isStatic() { return m_isStatic; }
 };
