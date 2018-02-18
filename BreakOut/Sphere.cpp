@@ -6,12 +6,18 @@ Sphere::Sphere() : RigidBody(SPHERE, glm::vec2(0, 0), glm::vec2(0, 0), 0, 1), m_
 	m_colour = glm::vec4(0, 1, 0, 1);
 	m_shapeTypeColour = glm::vec4(0, 1, 0, 1);
 	m_bounciness = 1.0f;
+	m_inertia = 0.5f * 1 * 1 * 1;
+	m_rotation = 0;
+	m_rotationalVelocity = 0;
 }
 Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour) : RigidBody(SPHERE, position, velocity, 0, mass), m_radius(radius)
 {
 	m_colour = colour;
 	m_shapeTypeColour = glm::vec4(0, 1, 0, 1);
 	m_bounciness = 1.0f;
+	m_inertia = 0.5f * mass * radius * radius;
+	m_rotation = 0;
+	m_rotationalVelocity = 0;
 }
 
 Sphere::~Sphere()

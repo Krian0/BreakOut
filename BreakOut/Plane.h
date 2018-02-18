@@ -1,4 +1,5 @@
 #pragma once
+#include <glm\ext.hpp>
 #include "PhysicsObject.h"
 #include "RigidBody.h"
 
@@ -17,9 +18,9 @@ public:
 	virtual void resetPosition();
 	
 	bool resolveCollision(RigidBody* actor2, glm::vec2 contact);
+	float distance(glm::vec2 point) { return glm::dot(point, m_normal) - m_distanceFromOrigin; }
 
 	glm::vec2 getNormal() { return m_normal; }
-	glm::vec2 getFlippedNormal() { return glm::vec2(m_normal.x * -1, m_normal.y * -1); }
 	float getDistance() { return m_distanceFromOrigin; }
 	float getBounciness() { return m_bounciness; }
 

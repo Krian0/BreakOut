@@ -14,7 +14,7 @@ public:
 	virtual void debug();
 
 	bool applyForce(glm::vec2 force, glm::vec2 pos);
-	bool applyForceToActor(RigidBody* actor2, glm::vec2 force, glm::vec2 pos);
+	bool applyForceToActor(RigidBody* actor2, glm::vec2 force, glm::vec2 pos1, glm::vec2 pos2);
 	bool resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2* collisionNormal = nullptr);
 
 	void setLinearDrag(float drag);
@@ -25,6 +25,7 @@ public:
 	glm::vec2 getForce() { return m_velocity * m_mass; }
 	float getRotation() { return m_rotation; }
 	float getMass() { return m_mass; }
+	float getInertia() { return m_inertia; }
 	float getBounciness() { return m_bounciness; }
 	float getLinearDrag() { return m_linearDrag; }
 	float getRotationalDrag() { return m_rotationalDrag; }
@@ -41,6 +42,6 @@ protected:
 	float m_linearDrag;
 	float m_rotationalDrag;
 
-const float MIN_LINEAR_THRESHOLD = 0.1f;
-const float	MIN_ROTATION_THRESHOLD = 0.1f;
+const double MIN_LINEAR_THRESHOLD = 0.05;
+const double MIN_ROTATION_THRESHOLD = 0.05;
 };

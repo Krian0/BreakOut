@@ -22,7 +22,9 @@ public:
 	virtual void draw();
 	void resetVelocity();
 
-	glm::vec2 getCorner(BoxCorner corner);
+	glm::vec2 getCorner(BoxCorner id);
+	glm::vec2 getProjection(glm::vec2 axis);
+	
 	glm::vec2 getHalfExtents() { return m_halfExtents; }
 	glm::vec2 getLocalXAxis() { return m_localAxisX; }
 	glm::vec2 getLocalYAxis() { return m_localAxisY; }
@@ -30,7 +32,10 @@ public:
 
 
 protected:
+	void updateVariables();
+
 	glm::vec2 m_halfExtents;
 	glm::vec2 m_localAxisX;
 	glm::vec2 m_localAxisY;
+	glm::vec2 m_corners[4];
 };

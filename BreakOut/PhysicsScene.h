@@ -2,12 +2,35 @@
 #include <glm\vec2.hpp>
 #include <list>
 #include <utility>
+#include <vector>
 
 #include "PhysicsObject.h"
 
+using std::vector;
 using std::list;
 using std::pair;
 using std::make_pair;
+
+
+struct Projection
+{
+	glm::vec2 Projection_A;
+	glm::vec2 Projection_B;
+	bool Intersection;
+
+	Projection(glm::vec2 vectorA, glm::vec2 vectorB) : Projection_A(vectorA), Projection_B(vectorB)
+	{
+		if (Projection_A.y < Projection_B.x || Projection_B.y < Projection_A.x)
+			Intersection = true;
+		else
+			Intersection = false;
+	}
+
+	float getDistance()
+	{
+		return fminf(Projection_A.y, Projection_B.y) - fmaxf(Projection_A.x, Projection_B.x);
+	}
+};
 
 
 class PhysicsScene
@@ -41,17 +64,17 @@ public:
 
 
 	void setGravity(const glm::vec2 gravity) { m_gravity = gravity; }
-	glm::vec2 getGravity() const { return m_gravity; }
-
 	void setTimeStep(const float timeStep) { m_timeStep = timeStep; }
+	glm::vec2 getGravity() const { return m_gravity; }
 	float getTimeStep() const { return m_timeStep; }
 
 
 protected:
-	glm::vec2 getNormalAxis(glm::vec2 corner1, glm::vec2 corner2);
+	//static glm::vec2 getNormalAxis(glm::vec2 corner1, glm::vec2 corner2);
+	//static glm::vec2 getVecProjection(glm::vec2 vec1, glm::vec2 vec2);
 
-	glm::vec2 m_gravity;
 	list<PhysicsObject*> m_actors;
+	glm::vec2 m_gravity;
 	float m_timeStep;
 
 };

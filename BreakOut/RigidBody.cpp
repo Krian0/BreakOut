@@ -25,9 +25,6 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 		m_velocity = glm::vec2(0, 0);
 	if (abs(m_rotationalVelocity) < MIN_ROTATION_THRESHOLD)
 		m_rotationalVelocity = 0;
-
-	m_rotationalVelocity -= m_rotationalVelocity * m_rotationalDrag * timeStep;
-
 }
 
 void RigidBody::debug()
@@ -39,15 +36,15 @@ void RigidBody::debug()
 bool RigidBody::applyForce(glm::vec2 force, glm::vec2 pos)
 {
 	m_velocity += force / m_mass;
-	m_rotationalVelocity += (force.y * pos.x - force.x * pos.y) / m_inertia;
+	m_rotationalVelocity += (force.y * pos.x - force.x * pos.y) / (m_inertia);
 
 	return true;
 }
 
-bool RigidBody::applyForceToActor(RigidBody* actor2, glm::vec2 force, glm::vec2 pos)
+bool RigidBody::applyForceToActor(RigidBody* actor2, glm::vec2 force, glm::vec2 pos1, glm::vec2 pos2)
 {
-	actor2->applyForce(force, pos);
-	return applyForce(-force, pos);
+	applyForce(-force, pos1);
+	return actor2->applyForce(force, pos2);
 }
 
 bool RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2* collisionNormal)
@@ -70,21 +67,13 @@ bool RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 	if (V.x > V.y)
 	{
 		glm::vec2 M(1.0f / (1.0f / M1 + (R.x * R.x) / m_inertia),	1.0f / (1.0f / M2 + (R.y * R.y) / actor2->m_inertia));
-		
+
 		float elasticity = (m_bounciness + actor2->getBounciness()) / 2.0f;
 		glm::vec2 force = (1.0f + elasticity) * M.x * M.y / (M.x + M.y) * (V.x - V.y) * normal;
 
-		//float keBefore = this-> GetEnergy() + actor2->GetEnergy();
-
-		bool ret  = applyForceToActor(actor2, -force, contact - m_position);
-
-		//float keAfter = this-> GetEnergy() + actor2->GetEnergy();
-
-		return ret;
+		return applyForceToActor(actor2, -force, contact - m_position, contact - actor2->m_position);
 	}
 
-	//glm::vec2 relativeVelocity = actor2->getVelocity() - m_velocity;
-	//if (glm::dot(normal, relativeVelocity) > 0)
 	return false;
 }
 
