@@ -4,6 +4,10 @@
 #include "Renderer2D.h"
 #include "PhysicsScene.h"
 
+#include "Plane.h"
+#include "Sphere.h"
+#include "Box.h"
+
 class BreakOutApp : public aie::Application {
 public:
 
@@ -24,5 +28,8 @@ protected:
 	aie::Font*			m_font;
 
 	PhysicsScene*		m_physicsScene;
+
+	Box* box;
+	Box* box2;
 
 };

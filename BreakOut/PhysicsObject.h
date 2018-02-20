@@ -1,7 +1,8 @@
 #pragma once
-#include<glm\vec2.hpp>
 #include<glm\vec4.hpp>
 #include<Gizmos.h>
+
+#include "VecLib\Vector2.h"
 
 enum ShapeType 
 {
@@ -25,7 +26,7 @@ protected:
 
 public:
 
-	virtual void fixedUpdate(glm::vec2 gravity, float timeStep) = 0;
+	virtual void fixedUpdate(Vector2 gravity, float timeStep) = 0;
 	virtual void debug() = 0;
 	virtual void draw() = 0;
 	virtual void resetPosition() {};

@@ -12,30 +12,27 @@ enum class BoxCorner
 
 class Box : public RigidBody
 {
-
 public:
-	Box(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float halfWidth, float halfHeight);
+	Box(Vector2 position, Vector2 velocity, float rotation, float mass, float halfWidth, float halfHeight);
 	~Box();
 
-
-	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
+	virtual void fixedUpdate(Vector2 gravity, float timeStep);
 	virtual void draw();
 	void resetVelocity();
 
-	glm::vec2 getCorner(BoxCorner id);
-	glm::vec2 getProjection(glm::vec2 axis);
+	Vector2 getCorner(BoxCorner id);
+	Vector2 getProjection(Vector2 axis);
 	
-	glm::vec2 getHalfExtents() { return m_halfExtents; }
-	glm::vec2 getLocalXAxis() { return m_localAxisX; }
-	glm::vec2 getLocalYAxis() { return m_localAxisY; }
+	Vector2 getLocalXAxis() { return m_localAxis[0]; }
+	Vector2 getLocalYAxis() { return m_localAxis[1]; }
+	Vector2 getHalfExtents() { return m_halfExtents; }
 	glm::vec4 getColour() { return m_colour; }
 
 
 protected:
 	void updateVariables();
 
-	glm::vec2 m_halfExtents;
-	glm::vec2 m_localAxisX;
-	glm::vec2 m_localAxisY;
-	glm::vec2 m_corners[4];
+	Vector2 m_localAxis[2];
+	Vector2 m_corners[4];
+	Vector2 m_halfExtents;
 };

@@ -1,16 +1,14 @@
 #pragma once
 #include "RigidBody.h"
 
-
 class Sphere : public RigidBody
 {
-
 public:
 	Sphere();
-	Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour);
+	Sphere(Vector2 position, Vector2 velocity, float mass, float radius, glm::vec4 colour);
 	~Sphere();
 
-	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
+	virtual void fixedUpdate(Vector2 gravity, float timeStep);
 	virtual void draw();
 	void resetVelocity();
 
@@ -19,7 +17,5 @@ public:
 
 
 protected:
-
 	float m_radius;
-
 };
