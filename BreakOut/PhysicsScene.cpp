@@ -1,14 +1,11 @@
-#include <glm\ext.hpp>
 #include <iostream>
-
 #include "PhysicsScene.h"
-#include "RigidBody.h"
+#include "Plane.h"
 #include "Sphere.h"
 #include "Box.h"
-#include "Plane.h"
-#include "Spring.h"
-#include "CDetectionHandler.h"
-
+#include "CollisionDataStruct.h"
+#include "CDetection.h"
+#include "CResolution.h"
 
 PhysicsScene::PhysicsScene() : m_timeStep(0.01f), m_gravity(Vector2(0, 0)) {}
 PhysicsScene::~PhysicsScene() 
@@ -65,13 +62,9 @@ void PhysicsScene::draw()
 
 void PhysicsScene::checkForCollision()
 {
-	Vector2 contact;
-	Vector2 normal;
-	float numberOfContacts = 0;
+	CData collisionData;
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); it++)
 		for (auto it2 = std::next(it); it2 != m_actors.end(); it2++)
-			if (CDetectionHandler::detectCollision((*it), (*it2), contact, normal, numberOfContacts))
-				return;//HandleResolution
-				
+			CDetection::detectCollision((*it), (*it2), collisionData);
 }

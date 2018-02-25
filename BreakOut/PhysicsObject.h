@@ -1,17 +1,8 @@
 #pragma once
 #include<glm\vec4.hpp>
 #include<Gizmos.h>
-
 #include "VecLib\Vector2.h"
-
-enum ShapeType 
-{
-	PLANE = 0,
-	SPHERE,
-	BOX,
-	SHAPE_COUNT,
-	SPRING
-};
+#include "ShapeEnum.h"
 
 class PhysicsObject
 {

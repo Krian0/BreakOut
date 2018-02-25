@@ -1,5 +1,5 @@
 #include "Plane.h"
-#include<glm\ext.hpp>
+#include<glm\vec2.hpp>
 
 Plane::Plane() : PhysicsObject(PLANE, true), m_normal(Vector2(0, 1)), m_distanceFromOrigin(0)
 { 

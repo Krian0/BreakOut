@@ -2,19 +2,25 @@
 #include "VecLib\Vector2.h"
 #include <math.h>
 
-class Projection
+class ProjectionHandler
 {
+	struct Projection
+	{
+		float min, max;
+		Projection() {}
+		Projection(float minF, float maxF) : min(minF), max(maxF) {}
+	};
+
 public:
-	Projection(Vector2 vectorA, Vector2 vectorB);
-	~Projection() {};
+	ProjectionHandler(Vector2 vectorA, Vector2 vectorB);
+	~ProjectionHandler() {};
 
-	float getDistance() { return fminf(p1.y, p2.y) - fmaxf(p1.x, p2.x); }
+	bool overlaps();
+	float getPenetration() { return fminf(p1.max, p2.max) - fmaxf(p1.min, p2.min); }
 
-	Vector2 p1;
-	Vector2 p2;
-	bool Intersection;
+	Projection p1;
+	Projection p2;
 
 protected:
-	bool contactsOn(float pValue, Vector2 otherP) { return pValue >= otherP.x && pValue <= otherP.y; };
-	Projection() {};
+	ProjectionHandler() {};
 };

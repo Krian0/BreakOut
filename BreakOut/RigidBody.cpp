@@ -1,6 +1,5 @@
 #include "RigidBody.h"
 #include "VecLib\UtilityVec2.h"
-#include <glm\ext.hpp>
 #include <math.h>
 
 
@@ -48,35 +47,10 @@ bool RigidBody::applyForceToActor(RigidBody* actor2, Vector2 force, Vector2 pos1
 	return actor2->applyForce(force, pos2);
 }
 
-bool RigidBody::resolveCollision(RigidBody* actor2, Vector2 contact, Vector2* collisionNormal)
+void RigidBody::setPosition(Vector2 position)
 {
-	float M1 = m_mass, M2 = actor2->m_mass;
-
-	if (isStatic())
-		M1 = INFINITY;
-	if (actor2->isStatic())
-		M2 = INFINITY;
-
-	Vector2 normal = collisionNormal ? *collisionNormal : UV2::normal(actor2->m_position - m_position);
-	Vector2 perp(normal.y, -normal.x);
-
-	Vector2 R(UV2::dot(contact - m_position, -perp), UV2::dot(contact - actor2->m_position, perp));
-	Vector2 V(UV2::dot(m_velocity, normal) - R.x * m_rotationalVelocity, UV2::dot(actor2->m_velocity, normal) + R.y * actor2->m_rotationalVelocity);
-
-
-	if (V.x > V.y)
-	{
-		Vector2 M(1.0f / (1.0f / M1 + (R.x * R.x) / m_inertia),	1.0f / (1.0f / M2 + (R.y * R.y) / actor2->m_inertia));
-
-		float elasticity = (m_bounciness + actor2->getBounciness()) / 2.0f;
-		Vector2 force = (1.0f + elasticity) * M.x * M.y / (M.x + M.y) * (V.x - V.y) * normal;
-
-		return applyForceToActor(actor2, -force, contact - m_position, contact - actor2->m_position);
-	}
-
-	return false;
+	m_position = position;
 }
-
 
 void RigidBody::setLinearDrag(float drag)
 {

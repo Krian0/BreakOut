@@ -1,5 +1,4 @@
 #pragma once
-#include <glm\ext.hpp>
 #include "PhysicsObject.h"
 #include "RigidBody.h"
 #include "VecLib\UtilityVec2.h"
@@ -32,4 +31,3 @@ protected:
 	float m_bounciness;
 
 };
-

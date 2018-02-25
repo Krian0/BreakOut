@@ -1,6 +1,6 @@
 #include "Box.h"
 #include "VecLib\UtilityVec2.h"
-#include <vector>
+#include<glm\vec2.hpp>
 
 Box::Box(Vector2 position, Vector2 velocity, float rotation, float mass, float halfWidth, float halfHeight) : RigidBody(BOX, position, velocity, rotation, mass)
 {
@@ -25,13 +25,11 @@ void Box::fixedUpdate(Vector2 gravity, float timeStep)
 
 void Box::draw()
 {
-	Vector2 p1 = getCorner(BoxCorner::TOP_LEFT);
-	Vector2 p2 = getCorner(BoxCorner::TOP_RIGHT);
-	Vector2 p3 = getCorner(BoxCorner::BOTTOM_RIGHT);
-	Vector2 p4 = getCorner(BoxCorner::BOTTOM_LEFT);
+	glm::vec2 p1(m_corners[0].x, m_corners[0].y);
+	glm::vec2 p3(m_corners[2].x, m_corners[2].y);
 
-	aie::Gizmos::add2DTri(glm::vec2(p1.x,p1.y), glm::vec2(p3.x, p3.y), glm::vec2(p2.x, p2.y), m_colour);
-	aie::Gizmos::add2DTri(glm::vec2(p1.x, p1.y), glm::vec2(p4.x, p4.y), glm::vec2(p3.x, p3.y), m_colour);
+	aie::Gizmos::add2DTri(p1, p3, glm::vec2(m_corners[1].x, m_corners[1].y), m_colour);
+	aie::Gizmos::add2DTri(p1, glm::vec2(m_corners[3].x, m_corners[3].y), p3, m_colour);
 
 	aie::Gizmos::add2DCircle(glm::vec2(m_position.x, m_position.y), 1, 4, m_shapeTypeColour);
 }
@@ -39,41 +37,6 @@ void Box::draw()
 void Box::resetVelocity()
 {
 	m_velocity.SetVector(0, 0);
-}
-
-//Returns corner position (glm::vec2) by enum BoxCorner. TopLeft corner == index 0, TopRight, BottomRight, BottomLeft. Takes enum BoxCorner (id).
-Vector2 Box::getCorner(BoxCorner id)
-{
-	if (id == BoxCorner::TOP_LEFT)
-		return m_corners[(int)BoxCorner::TOP_LEFT];
-
-	if (id == BoxCorner::TOP_RIGHT)
-		return m_corners[(int)BoxCorner::TOP_RIGHT];
-
-	if (id == BoxCorner::BOTTOM_RIGHT)
-		return m_corners[(int)BoxCorner::BOTTOM_RIGHT];
-			
-	if (id == BoxCorner::BOTTOM_LEFT)
-		return m_corners[(int)BoxCorner::BOTTOM_LEFT];
-
-	return Vector2(0,0);
-}
-
-Vector2 Box::getProjection(Vector2 axis)
-{
-	float dot = UV2::dot(m_corners[0], axis);
-	Vector2 minMax(dot, dot);
-
-	for (int i = 1; i < 4; i++)
-	{
-		dot = UV2::dot(m_corners[i], axis);
-		if (dot < minMax.x)
-			minMax.x = dot;
-		else if (dot > minMax.y)
-			minMax.y = dot;
-	}
-
-	return minMax;
 }
 
 void Box::updateVariables()

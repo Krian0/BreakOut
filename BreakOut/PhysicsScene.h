@@ -1,18 +1,7 @@
 #pragma once
-#include <glm\vec2.hpp>
 #include <list>
-//#include <utility>
-#include <vector>
-
-#include "PhysicsObject.h"
-#include "Projection.h"
 #include "VecLib\Vector2.h"
-
-using std::vector;
-using std::list;
-//using std::pair;
-//using std::make_pair;
-
+#include "PhysicsObject.h"
 
 class PhysicsScene
 {
@@ -36,7 +25,7 @@ public:
 
 
 protected:
-	list<PhysicsObject*> m_actors;
+	std::list<PhysicsObject*> m_actors;
 	Vector2 m_gravity;
 	float m_timeStep;
 };

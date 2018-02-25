@@ -1,7 +1,6 @@
 #pragma once
 #include "PhysicsObject.h"
 
-
 class RigidBody : public PhysicsObject
 {
 
@@ -15,14 +14,16 @@ public:
 
 	bool applyForce(Vector2 force, Vector2 pos);
 	bool applyForceToActor(RigidBody* actor2, Vector2 force, Vector2 pos1, Vector2 pos2);
-	bool resolveCollision(RigidBody* actor2, Vector2 contact, Vector2* collisionNormal = nullptr);
 
+	void setPosition(Vector2 position);
 	void setLinearDrag(float drag);
 	void setRotationalDrag(float drag);
 
+	Vector2 getForce() { return m_velocity * m_mass; }
 	Vector2 getPosition() { return m_position; }
 	Vector2 getVelocity() { return m_velocity; }
-	Vector2 getForce() { return m_velocity * m_mass; }
+	
+	float getRotVelocity() { return m_rotationalVelocity; }
 	float getRotation() { return m_rotation; }
 	float getMass() { return m_mass; }
 	float getInertia() { return m_inertia; }
@@ -34,6 +35,7 @@ public:
 protected:
 	Vector2 m_position;
 	Vector2 m_velocity;
+
 	float m_rotationalVelocity;
 	float m_rotation;
 	float m_inertia;

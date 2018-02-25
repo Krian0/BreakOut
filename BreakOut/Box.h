@@ -1,14 +1,7 @@
 #pragma once
 #include "RigidBody.h"
-#include <glm\ext.hpp>
+#include "CollisionDataStruct.h"
 
-enum class BoxCorner
-{
-	TOP_LEFT = 0,
-	TOP_RIGHT,
-	BOTTOM_RIGHT,
-	BOTTOM_LEFT
-};
 
 class Box : public RigidBody
 {
@@ -20,19 +13,21 @@ public:
 	virtual void draw();
 	void resetVelocity();
 
-	Vector2 getCorner(BoxCorner id);
-	Vector2 getProjection(Vector2 axis);
+	Vector2 getCorner(unsigned int id) { return m_corners[id]; }
+	Vector2 getCornerLocal(unsigned int id) { return Vector2(m_corners[id].x - m_position.x, m_corners[id].y - m_position.y); }
 	
 	Vector2 getLocalXAxis() { return m_localAxis[0]; }
 	Vector2 getLocalYAxis() { return m_localAxis[1]; }
 	Vector2 getHalfExtents() { return m_halfExtents; }
 	glm::vec4 getColour() { return m_colour; }
 
+	const static int axis_Size = 2;
+	const static int corner_Size = 4;
 
 protected:
 	void updateVariables();
 
-	Vector2 m_localAxis[2];
-	Vector2 m_corners[4];
+	Vector2 m_localAxis[axis_Size];
+	Vector2 m_corners[corner_Size];
 	Vector2 m_halfExtents;
 };
