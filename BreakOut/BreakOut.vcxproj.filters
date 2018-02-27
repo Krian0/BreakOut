@@ -75,9 +75,6 @@
     <ClCompile Include="CResolution.cpp">
       <Filter>Source Files\Physics\Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="CDetection.cpp">
-      <Filter>Source Files\Physics\Handlers</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BreakOutApp.h">
@@ -108,9 +105,6 @@
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="CResolution.h">
-      <Filter>Header Files\Physics\Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="CDetection.h">
       <Filter>Header Files\Physics\Handlers</Filter>
     </ClInclude>
     <ClInclude Include="ShapeEnum.h">

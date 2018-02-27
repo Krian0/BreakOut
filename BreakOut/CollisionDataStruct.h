@@ -1,47 +1,36 @@
 #pragma once
-#include "VecLib\UtilityVec2.h"
+#include<glm\vec2.hpp>
 #include "PhysicsObject.h"
 
 struct CData
 {
-	PhysicsObject* obj1;
-	PhysicsObject* obj2;
+	glm::vec2 contact;
+	glm::vec2 contactForce;
+	glm::vec2 normal;
+	float numberOfContacts = 0;
+	float penetration = 0;
 
-	Vector2 contact;
-	Vector2 contactForce;
-	Vector2 normal;
-	float numberOfContacts;
-	float penetration;
+	CData() : contact(glm::vec2(0, 0)), contactForce(glm::vec2(0, 0)), normal(glm::vec2(0, 0)), numberOfContacts(0), penetration(0) {}
 
-	//Reset variables and set obj1 and obj2 to the respective given parameters. Takes two PhysicsObject* parameters.
-	void resetData(PhysicsObject* object1, PhysicsObject* object2)
+	//Resets all variables to 0.
+	void resetData()
 	{
-		contact.SetVector(0, 0);
-		contactForce.SetVector(0, 0);
-		normal.SetVector(0, 0);
+		glm::vec2 zeroVec(0, 0);
+		
+		contact = zeroVec;
+		contactForce = zeroVec;
+		normal = zeroVec;
 		numberOfContacts = 0;
 		penetration = 0;
-
-		obj1 = object1;
-		obj2 = object2;
 	}
 
-	//Switches what obj1 and obj2 point to. No parameters.
-	CData& switchObjects()
-	{
-		PhysicsObject* newObject2 = obj1;
-		obj1 = obj2;
-		obj2 = newObject2;
-
-		return *this;
-	}
-
-	void setData(Vector2 contactAdd, Vector2 normalV, float penetrationF, bool noSkip)
+	//Increments numberOfContacts, sets variables to the matching parameters given. Allows normal and penetration to be set optionally through bool parameter.
+	void setData(glm::vec2 contactAdd, glm::vec2 normalV, float penetrationF, bool setN_P = true)
 	{
 		numberOfContacts++;
 		contact += contactAdd;
 
-		if (!noSkip) return;
+		if (!setN_P) return;
 
 		normal = normalV;
 		penetration = penetrationF;

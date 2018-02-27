@@ -1,33 +1,42 @@
 #pragma once
 #include "RigidBody.h"
-#include "CollisionDataStruct.h"
-
 
 class Box : public RigidBody
 {
 public:
-	Box(Vector2 position, Vector2 velocity, float rotation, float mass, float halfWidth, float halfHeight);
+	Box(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float bounciness, float halfWidth, float halfHeight);
 	~Box();
 
-	virtual void fixedUpdate(Vector2 gravity, float timeStep);
+
+	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
 	virtual void draw();
-	void resetVelocity();
 
-	Vector2 getCorner(unsigned int id) { return m_corners[id]; }
-	Vector2 getCornerLocal(unsigned int id) { return Vector2(m_corners[id].x - m_position.x, m_corners[id].y - m_position.y); }
+
+	bool detectCollision(CData& data, PhysicsObject& obj) override;
+	bool detectCollision(CData& data, Plane& plane) override;
+	bool detectCollision(CData& data, Sphere& sphere) override;
+	bool detectCollision(CData& data, Box& box) override;
+	bool detectCollision(glm::vec2& point) override;
+
+
+	glm::vec2 getCorner(unsigned int id)		{ return m_corners[id]; }
+	glm::vec2 getCornerLocal(unsigned int id) { return glm::vec2(m_corners[id].x - m_position.x, m_corners[id].y - m_position.y); }
 	
-	Vector2 getLocalXAxis() { return m_localAxis[0]; }
-	Vector2 getLocalYAxis() { return m_localAxis[1]; }
-	Vector2 getHalfExtents() { return m_halfExtents; }
-	glm::vec4 getColour() { return m_colour; }
+	glm::vec2 getLocalXAxis()		{ return m_localX; }
+	glm::vec2 getLocalYAxis()		{ return m_localY; }
+	glm::vec2 getHalfExtents()	{ return m_halfExtents; }
+	glm::vec4 getColour()		{ return m_colour; }
 
-	const static int axis_Size = 2;
+
 	const static int corner_Size = 4;
 
-protected:
+
+private:
+	bool checkCorners(Box& box, glm::vec2& contactForce, CData& data);
 	void updateVariables();
 
-	Vector2 m_localAxis[axis_Size];
-	Vector2 m_corners[corner_Size];
-	Vector2 m_halfExtents;
+	glm::vec2 m_localX;
+	glm::vec2 m_localY;
+	glm::vec2 m_corners[corner_Size];		//Corners in world space. Indices return clockwise corners starting from TopLeft.
+	glm::vec2 m_halfExtents;
 };

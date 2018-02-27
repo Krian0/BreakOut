@@ -1,8 +1,9 @@
 #include "Sphere.h"
-#include <glm\vec2.hpp>
+#include "Box.h"
+#include "Plane.h"
+#include <glm\ext.hpp>
 
-
-Sphere::Sphere() : RigidBody(SPHERE, Vector2(0, 0), Vector2(0, 0), 0, 1), m_radius(1)
+Sphere::Sphere() : RigidBody(SPHERE, glm::vec2(0, 0), glm::vec2(0, 0), 0, 1, 1), m_radius(1)
 {
 	m_colour = glm::vec4(0, 1, 0, 1);
 	m_shapeTypeColour = glm::vec4(0, 1, 0, 1);
@@ -11,7 +12,7 @@ Sphere::Sphere() : RigidBody(SPHERE, Vector2(0, 0), Vector2(0, 0), 0, 1), m_radi
 	m_rotation = 0;
 	m_rotationalVelocity = 0;
 }
-Sphere::Sphere(Vector2 position, Vector2 velocity, float mass, float radius, glm::vec4 colour) : RigidBody(SPHERE, position, velocity, 0, mass), m_radius(radius)
+Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float bounciness, float radius, glm::vec4 colour) : RigidBody(SPHERE, position, velocity, 0, mass, bounciness), m_radius(radius)
 {
 	m_colour = colour;
 	m_shapeTypeColour = glm::vec4(0, 1, 0, 1);
@@ -26,7 +27,7 @@ Sphere::~Sphere()
 }
 
 
-void Sphere::fixedUpdate(Vector2 gravity, float timeStep)
+void Sphere::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
 	RigidBody::fixedUpdate(gravity, timeStep);
 }
@@ -39,7 +40,38 @@ void Sphere::draw()
 	aie::Gizmos::add2DLine(pos, pos + end, glm::vec4(1, 1, 1, 1));
 }
 
-void Sphere::resetVelocity()
+bool Sphere::detectCollision(CData& data, PhysicsObject& obj)
 {
-	m_velocity.SetVector(0, 0);
+	return obj.detectCollision(data, *this);
+}
+
+bool Sphere::detectCollision(CData& data, Plane& plane)
+{
+	return plane.detectCollision(data, *this);
+}
+
+bool Sphere::detectCollision(CData& data, Sphere& sphere)
+{
+	glm::vec2 delta = sphere.m_position - m_position;
+	float distance = glm::length(delta);
+
+	float intersection = m_radius + sphere.m_radius - distance;
+
+	if (intersection <= 0) return false;
+
+	data.contactForce = 0.5f * (distance - (m_radius + sphere.m_radius)) * delta / distance;
+	setPosition(m_position + data.contactForce);
+	sphere.setPosition(sphere.m_position - data.contactForce);
+
+	return rigidResolve(sphere, 0.5f * (m_position + sphere.m_position), NULL);
+}
+
+bool Sphere::detectCollision(CData& data, Box& box)
+{
+	return box.detectCollision(data, *this);
+}
+
+bool Sphere::detectCollision(glm::vec2& point)
+{
+	return false;
 }

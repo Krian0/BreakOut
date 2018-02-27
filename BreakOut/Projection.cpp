@@ -1,6 +1,6 @@
 #include "Projection.h"
 
-ProjectionHandler::ProjectionHandler(Vector2 vectorA, Vector2 vectorB) : p1(vectorA.x, vectorA.y), p2(vectorB.x, vectorB.y)
+ProjectionHandler::ProjectionHandler(glm::vec2 vectorA, glm::vec2 vectorB) : p1(vectorA.x, vectorA.y), p2(vectorB.x, vectorB.y)
 {
 	
 }

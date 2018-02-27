@@ -29,7 +29,13 @@ protected:
 
 	PhysicsScene*		m_physicsScene;
 
-	Box* box;
-	Box* box2;
+	Sphere* s1;
+	Sphere* s2;
+	Sphere* sa;
+	Sphere* sb;
+	Sphere* sc;
+
+	Box* b1;
+	Box* b2;
 
 };

@@ -3,11 +3,10 @@
 #include "Plane.h"
 #include "Sphere.h"
 #include "Box.h"
-#include "CollisionDataStruct.h"
-#include "CDetection.h"
+
 #include "CResolution.h"
 
-PhysicsScene::PhysicsScene() : m_timeStep(0.01f), m_gravity(Vector2(0, 0)) {}
+PhysicsScene::PhysicsScene() : m_timeStep(0.01f), m_gravity(glm::vec2(0, 0)) {}
 PhysicsScene::~PhysicsScene() 
 {
 	for (auto anActor : m_actors)
@@ -66,5 +65,6 @@ void PhysicsScene::checkForCollision()
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); it++)
 		for (auto it2 = std::next(it); it2 != m_actors.end(); it2++)
-			CDetection::detectCollision((*it), (*it2), collisionData);
+			if ((*it)->detectCollision(collisionData, *(*it2)))
+			{}
 }

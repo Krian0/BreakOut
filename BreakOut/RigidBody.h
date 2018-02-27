@@ -6,22 +6,28 @@ class RigidBody : public PhysicsObject
 
 public:
 
-	RigidBody(ShapeType shapeTypeID, Vector2 position, Vector2 velocity, float rotation, float mass, float linearDrag = 0.3f, float rotationalDrag = 0.3f, bool isStatic = false);
+	RigidBody(ShapeType shapeTypeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float bounciness, float linearDrag = 0.3f, float rotationalDrag = 0.3f, bool isStatic = false);
 	~RigidBody();
 
-	virtual void fixedUpdate(Vector2 gravity, float timeStep);
+	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
 	virtual void debug();
 
-	bool applyForce(Vector2 force, Vector2 pos);
-	bool applyForceToActor(RigidBody* actor2, Vector2 force, Vector2 pos1, Vector2 pos2);
+	bool applyForce(glm::vec2 force, glm::vec2 pos);
+	bool applyForceToActor(RigidBody& actor2, glm::vec2 force, glm::vec2 pos1, glm::vec2 pos2);
 
-	void setPosition(Vector2 position);
+	bool rigidResolve(RigidBody& rigid, glm::vec2 contact, glm::vec2* collisionNormal);
+
+	void resetVelocity() 
+	{ 
+		m_velocity = glm::vec2(0, 0); 
+	}
+	void setPosition(glm::vec2 position);
 	void setLinearDrag(float drag);
 	void setRotationalDrag(float drag);
 
-	Vector2 getForce() { return m_velocity * m_mass; }
-	Vector2 getPosition() { return m_position; }
-	Vector2 getVelocity() { return m_velocity; }
+	glm::vec2 getForce() { return m_velocity * m_mass; }
+	glm::vec2 getPosition() { return m_position; }
+	glm::vec2 getVelocity() { return m_velocity; }
 	
 	float getRotVelocity() { return m_rotationalVelocity; }
 	float getRotation() { return m_rotation; }
@@ -33,17 +39,16 @@ public:
 
 
 protected:
-	Vector2 m_position;
-	Vector2 m_velocity;
+	glm::vec2 m_position;
+	glm::vec2 m_velocity;
 
 	float m_rotationalVelocity;
 	float m_rotation;
 	float m_inertia;
 	float m_mass;
-	float m_bounciness;
 	float m_linearDrag;
 	float m_rotationalDrag;
 
-const double MIN_LINEAR_THRESHOLD = 0.05;
-const double MIN_ROTATION_THRESHOLD = 0.05;
+	const double MIN_LINEAR_THRESHOLD = 0.05;
+	const double MIN_ROTATION_THRESHOLD = 0.05;
 };

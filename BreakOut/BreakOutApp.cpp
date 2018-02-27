@@ -3,7 +3,6 @@
 #include "Font.h"
 #include "Input.h"
 
-
 #include <glm\ext.hpp>
 #include <Gizmos.h>
 
@@ -25,32 +24,37 @@ bool BreakOutApp::startup()
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);		//TODO: remember to change this when redistributing a build! The following path would be used instead: "./font/consolas.ttf"
 
 	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setGravity(Vector2(0, 0));
+	m_physicsScene->setGravity(glm::vec2(0, -9.8f));
 	m_physicsScene->setTimeStep(0.01f);
 
-	Vector2 zeroVec(0, 0);
-	Vector2 thirtyVec(30, 0);
+	glm::vec4 c(0, 0, 1, 1);
 
-	Sphere* ball1 = new Sphere(Vector2(0, 26), Vector2(-4, -100), 0.01f, 3, glm::vec4(1, 0, 0, 1));
-	//Sphere* ball2 = new Sphere(Vector2(-10, 20), Vector2(-10, 100), 0.02f, 3, glm::vec4(1, 0, 0, 1));
-	//Sphere* ball3 = new Sphere(Vector2(12, -10), Vector2(4, -50), 0.03f, 3, glm::vec4(1, 0, 0, 1));
-	//Sphere* ball4 = new Sphere(Vector2(28, -20), Vector2(10, 50), 0.04f, 3, glm::vec4(1, 0, 0, 1));
+	glm::vec2 zeroVec(0, 0);
+	glm::vec2 thirtyVec(30, 0);
 
-	box = new Box(zeroVec, zeroVec, 45, 0.04f, 4, 4);
-	box2 = new Box(thirtyVec, -thirtyVec, 45, 0.04f, 4, 4);
+	//s1 = new Sphere(zeroVec, zeroVec, 0.04f, 1, 3, c);
+	s2 = new Sphere(thirtyVec, -thirtyVec, 0.04f, 1, 3, c);
+	sa = new Sphere(glm::vec2(0, 10), -thirtyVec, 0.04f, 0.8, 3, c);
+	sb = new Sphere(glm::vec2(10, 0), -thirtyVec, 0.04f, 0.6, 3, c);
+	sc = new Sphere(glm::vec2(0, 20), -thirtyVec, 0.04f, 0.7, 3, c);
+	//m_physicsScene->addActor(s1);
+	m_physicsScene->addActor(s2);
+	m_physicsScene->addActor(sa);
+	m_physicsScene->addActor(sb);
+	m_physicsScene->addActor(sc);
+
+	//b1  = new Box(zeroVec, zeroVec, 0, 0.04f, 1, 4, 4);
+	//b2 = new Box(thirtyVec, -thirtyVec, 45, 0.04f, 1, 4, 4);
+	//m_physicsScene->addActor(b1);
+	//m_physicsScene->addActor(b2);
 	
-	Plane* ground = new Plane(Vector2(0, -1), 50, glm::vec4(0, 0, 1, 1));
-	Plane* sideLeft = new Plane(Vector2(-1, 0), 40, glm::vec4(0, 0, 1, 1));
-	Plane* sideRight = new Plane(Vector2(1, 0), 40, glm::vec4(0, 0, 1, 1));
-	Plane* sky = new Plane(Vector2(0, 1), 50, glm::vec4(0, 0, 1, 1));
+	Plane* ground		= new Plane(glm::vec2(0, -1), 50, 0.75, c);
+	Plane* sideLeft		= new Plane(glm::vec2(-1, 0), 40, 0.75, c);
+	Plane* sideRight	= new Plane(glm::vec2(1, 0), 40, 0.75, c);
+	Plane* sky			= new Plane(glm::vec2(0, 1), 50, 0.75, c);
 
-	//m_physicsScene->addActor(ball1);
-	//m_physicsScene->addActor(ball2);
-	//m_physicsScene->addActor(ball3);
-	//m_physicsScene->addActor(ball4);
 
-	m_physicsScene->addActor(box);
-	m_physicsScene->addActor(box2);
+
 
 	m_physicsScene->addActor(ground);
 	m_physicsScene->addActor(sideLeft);

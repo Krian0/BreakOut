@@ -1,5 +1,5 @@
 #pragma once
-#include "VecLib\Vector2.h"
+#include <glm\vec2.hpp>
 #include <math.h>
 
 class ProjectionHandler
@@ -12,7 +12,7 @@ class ProjectionHandler
 	};
 
 public:
-	ProjectionHandler(Vector2 vectorA, Vector2 vectorB);
+	ProjectionHandler(glm::vec2 vectorA, glm::vec2 vectorB);
 	~ProjectionHandler() {};
 
 	bool overlaps();

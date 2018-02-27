@@ -5,12 +5,21 @@ class Sphere : public RigidBody
 {
 public:
 	Sphere();
-	Sphere(Vector2 position, Vector2 velocity, float mass, float radius, glm::vec4 colour);
+	Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float bounciness, float radius, glm::vec4 colour);
 	~Sphere();
 
-	virtual void fixedUpdate(Vector2 gravity, float timeStep);
+
+	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
 	virtual void draw();
-	void resetVelocity();
+
+
+	bool detectCollision(CData& data, PhysicsObject& obj) override;
+	bool detectCollision(CData& data, Plane& plane) override;
+	bool detectCollision(CData& data, Sphere& sphere) override;
+	bool detectCollision(CData& data, Box& box) override;
+	bool detectCollision(glm::vec2& point) override;
+
+
 
 	float getRadius() { return m_radius; }
 	glm::vec4 getColour() { return m_colour; }
