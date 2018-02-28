@@ -76,6 +76,12 @@ void RigidBody::setPosition(glm::vec2 position)
 	m_position = position;
 }
 
+void RigidBody::setPositions(RigidBody& otherRigid, glm::vec2 contactForce)
+{
+	m_position = (m_position - contactForce);
+	otherRigid.m_position = (otherRigid.m_position + contactForce);
+}
+
 void RigidBody::setLinearDrag(float drag)
 {
 	drag = (float)fmin(drag, 1);

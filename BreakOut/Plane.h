@@ -19,17 +19,16 @@ public:
 	virtual void debug() {}
 
 
-	bool detectCollision(CData& data, PhysicsObject& obj) override;
+	bool detectCollision(PhysicsObject& obj) override;
 	bool detectCollision(CData& data, Plane& plane) override;
 	bool detectCollision(CData& data, Sphere& sphere) override;
 	bool detectCollision(CData& data, Box& box) override;
-	bool detectCollision(glm::vec2& point) override;
+	bool detectCollision(glm::vec2& point, glm::vec2& pointOut) override;
 
 
 	void resetNormal() { m_normal = glm::vec2(0, 0); }
 	void resetPosition() { m_distanceFromOrigin = 0; }
 	
-	bool resolveCollision(RigidBody* actor2, CData& data);
 
 	glm::vec2 getNormal()			 { return m_normal; }
 	float distance(glm::vec2 point)	 { return (glm::dot(point, m_normal) - m_distanceFromOrigin); }
@@ -38,6 +37,8 @@ public:
 
 
 protected:
+	bool resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2* contactVelocity = NULL, float r = 0);
+
 	glm::vec2 m_normal;
 	float m_distanceFromOrigin;
 };

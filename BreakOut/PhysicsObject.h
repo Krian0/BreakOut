@@ -24,11 +24,11 @@ public:
 
 	virtual void resetVelocity() = 0;
 
-	virtual bool detectCollision(CData& data, PhysicsObject& obj) = 0;
+	virtual bool detectCollision(PhysicsObject& obj) = 0;
 	virtual bool detectCollision(CData& data, Plane& plane) = 0;
 	virtual bool detectCollision(CData& data, Sphere& sphere) = 0;
 	virtual bool detectCollision(CData& data, Box& box) = 0;
-	virtual bool detectCollision(glm::vec2& point) = 0;
+	virtual bool detectCollision(glm::vec2& point, glm::vec2& pointOut) = 0;
 
 	virtual void fixedUpdate(glm::vec2 gravity, float timeStep) = 0;
 	virtual void debug() = 0;

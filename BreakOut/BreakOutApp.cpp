@@ -33,19 +33,19 @@ bool BreakOutApp::startup()
 	glm::vec2 thirtyVec(30, 0);
 
 	//s1 = new Sphere(zeroVec, zeroVec, 0.04f, 1, 3, c);
-	s2 = new Sphere(thirtyVec, -thirtyVec, 0.04f, 1, 3, c);
-	sa = new Sphere(glm::vec2(0, 10), -thirtyVec, 0.04f, 0.8, 3, c);
-	sb = new Sphere(glm::vec2(10, 0), -thirtyVec, 0.04f, 0.6, 3, c);
-	sc = new Sphere(glm::vec2(0, 20), -thirtyVec, 0.04f, 0.7, 3, c);
+	//s2 = new Sphere(thirtyVec, -thirtyVec, 0.04f, 1, 3, c);
+	//sa = new Sphere(glm::vec2(0, 10), -thirtyVec, 0.04f, 0.8f, 3, c);
+	//sb = new Sphere(glm::vec2(10, 0), -thirtyVec, 0.04f, 0.6f, 3, c);
+	//sc = new Sphere(glm::vec2(0, 20), -thirtyVec, 0.04f, 0.7f, 3, c);
 	//m_physicsScene->addActor(s1);
-	m_physicsScene->addActor(s2);
-	m_physicsScene->addActor(sa);
-	m_physicsScene->addActor(sb);
-	m_physicsScene->addActor(sc);
+	//m_physicsScene->addActor(s2);
+	//m_physicsScene->addActor(sa);
+	//m_physicsScene->addActor(sb);
+	//m_physicsScene->addActor(sc);
 
-	//b1  = new Box(zeroVec, zeroVec, 0, 0.04f, 1, 4, 4);
+	b1  = new Box(zeroVec, zeroVec, 30, 0.04f, 1, 4, 4);
 	//b2 = new Box(thirtyVec, -thirtyVec, 45, 0.04f, 1, 4, 4);
-	//m_physicsScene->addActor(b1);
+	m_physicsScene->addActor(b1);
 	//m_physicsScene->addActor(b2);
 	
 	Plane* ground		= new Plane(glm::vec2(0, -1), 50, 0.75, c);

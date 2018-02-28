@@ -13,11 +13,11 @@ public:
 	virtual void draw();
 
 
-	bool detectCollision(CData& data, PhysicsObject& obj) override;
+	bool detectCollision(PhysicsObject& obj) override;
 	bool detectCollision(CData& data, Plane& plane) override;
 	bool detectCollision(CData& data, Sphere& sphere) override;
 	bool detectCollision(CData& data, Box& box) override;
-	bool detectCollision(glm::vec2& point) override;
+	bool detectCollision(glm::vec2& point, glm::vec2& pointOut) override;
 
 
 

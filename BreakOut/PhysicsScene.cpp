@@ -61,10 +61,8 @@ void PhysicsScene::draw()
 
 void PhysicsScene::checkForCollision()
 {
-	CData collisionData;
-
 	for (auto it = m_actors.begin(); it != m_actors.end(); it++)
 		for (auto it2 = std::next(it); it2 != m_actors.end(); it2++)
-			if ((*it)->detectCollision(collisionData, *(*it2)))
+			if ((*it)->detectCollision(*(*it2)))
 			{}
 }

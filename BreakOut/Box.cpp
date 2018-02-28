@@ -1,6 +1,6 @@
 #include "Box.h"
+#include "Plane.h"
 #include "Sphere.h"
-#include<glm\vec2.hpp>
 #include<glm\ext.hpp>
 
 Box::Box(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float bounciness, float halfWidth, float halfHeight) : RigidBody(BOX, position, velocity, rotation, mass, bounciness)
@@ -36,33 +36,26 @@ void Box::draw()
 	aie::Gizmos::add2DCircle(m_position, 1, 4, m_colour);
 }
 
-bool Box::detectCollision(CData& data, PhysicsObject& obj)
+bool Box::detectCollision(PhysicsObject& obj)
 {
-	return obj.detectCollision(data, *this);
+	return obj.detectCollision(CData(), *this);
 }
 
 bool Box::detectCollision(CData& data, Plane& plane)
 {
-	return false;
+	return plane.detectCollision(data, *this);
 }
 
 bool Box::detectCollision(CData& data, Sphere& sphere)
 {
-	float radius = sphere.getRadius();
-	glm::vec2 circlePos = sphere.getPosition() - m_position;
-
 	for (int i = 0; i < corner_Size; i++)
-	{
-		glm::vec2 dp = m_corners[i] - circlePos;
-		if (dp.x*dp.x + dp.y*dp.y < radius*radius)
-		{
-			data.numberOfContacts++;
-			data.contact += getCornerLocal(i);
-		}
-	}
+		if (sphere.detectCollision(m_corners[i], glm::vec2()))				//Do a sphere vs point check with each corner, set data if it collides
+			data.setData(getCornerLocal(i), glm::vec2(), 0, false);
 
-	glm::vec2 p(glm::dot(m_localX, circlePos), glm::dot(m_localY, circlePos));
-	if (p.y < m_halfExtents.y && p.y > -m_halfExtents.y && p.x < m_halfExtents.x && p.x > -m_halfExtents.x)
+
+	glm::vec2 p;
+	float radius = sphere.getRadius();
+	if (detectCollision(sphere.getPosition(), p))
 	{
 		if (p.x > 0 && p.x <   m_halfExtents.x + radius)  data.setData(glm::vec2( m_halfExtents.x, p.y),  m_localX, (m_halfExtents.x + radius) - p.x);
 		if (p.x < 0 && p.x > -(m_halfExtents.x + radius)) data.setData(glm::vec2(-m_halfExtents.x, p.y), -m_localX, (m_halfExtents.x + radius) + p.x);
@@ -73,9 +66,10 @@ bool Box::detectCollision(CData& data, Sphere& sphere)
 	if (data.numberOfContacts == 0) return false;
 
 	data.contact = m_position + (1.0f / data.numberOfContacts) * (m_localX * data.contact.x + m_localY * data.contact.y);
+	data.contactForce = 0.5f * data.penetration * data.normal;
 	
-	setPosition(m_position - 0.5f * data.penetration * data.normal);
-	sphere.setPosition(sphere.getPosition() + 0.5f * data.penetration * data.normal);
+
+	setPositions(sphere, data.contactForce);
 	return rigidResolve(sphere, data.contact, &data.normal);
 }
 
@@ -87,19 +81,21 @@ bool Box::detectCollision(CData& data, Box& box)
 	if (box.checkCorners(*this, contactF2, data))
 		data.normal = -data.normal;
 
-	if (data.numberOfContacts == 0) 
-		return false;
+	if (data.numberOfContacts == 0) return false;
 
 	data.contactForce = 0.5f * (contactF1 - contactF2);
 	
-	setPosition(m_position - data.contactForce);
-	box.setPosition(box.m_position + data.contactForce);
-
+	setPositions(box, data.contactForce);
 	return rigidResolve(box, data.contact / data.numberOfContacts, &data.normal);
 }
 
-bool Box::detectCollision(glm::vec2& point)
+bool Box::detectCollision(glm::vec2& point, glm::vec2& pointOut)
 {
+	pointOut = glm::vec2(glm::dot(point - m_position, m_localX), glm::dot(point - m_position, m_localY)); //Point in local space of this box
+
+	if (pointOut.y > -m_halfExtents.y && pointOut.y < m_halfExtents.y && pointOut.x > -m_halfExtents.x && pointOut.x < m_halfExtents.x)		//If p is within this box's extents
+		return true;
+
 	return false;
 }
 
@@ -112,11 +108,10 @@ bool Box::checkCorners(Box& otherBox, glm::vec2& contactForce, CData& data)
 
 	for (auto corner : otherBox.m_corners)
 	{
-		glm::vec2 p(glm::dot(corner - m_position, m_localX), glm::dot(corner - m_position, m_localY)); //otherBox's corner in local space of this box
-
-		if (p.y > -m_halfExtents.y && p.y < m_halfExtents.y && p.x > -m_halfExtents.x && p.x < m_halfExtents.x)		//If p is within this box's extents
+		glm::vec2 p;
+		if (detectCollision(corner, p))		//If p (otherBox corner in local space of this box) is within the extents of this box...
 		{
-			if (p.x > 0)	data.setData((m_position + m_halfExtents.x * m_localX + p.y * m_localY),  m_localX, m_halfExtents.x - p.x);	//Set contact, normal and penetration
+			if (p.x > 0)	data.setData((m_position + m_halfExtents.x * m_localX + p.y * m_localY),  m_localX, m_halfExtents.x - p.x);	//Set contact, normal and penetration respectively
 			if (p.x < 0)	data.setData((m_position - m_halfExtents.x * m_localX + p.y * m_localY), -m_localX, m_halfExtents.x + p.x);
 			if (p.y > 0)	data.setData((m_position + p.x * m_localX + m_halfExtents.y * m_localY),  m_localY, m_halfExtents.y - p.y, (m_halfExtents.y - p.y < data.penetration || data.penetration == 0));
 			if (p.y < 0)	data.setData((m_position + p.x * m_localX - m_halfExtents.y * m_localY), -m_localY, m_halfExtents.y + p.y, (m_halfExtents.y + p.y < data.penetration || data.penetration == 0));

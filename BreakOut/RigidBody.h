@@ -22,6 +22,7 @@ public:
 		m_velocity = glm::vec2(0, 0); 
 	}
 	void setPosition(glm::vec2 position);
+	void setPositions(RigidBody& otherRigid, glm::vec2 contactForce);
 	void setLinearDrag(float drag);
 	void setRotationalDrag(float drag);
 

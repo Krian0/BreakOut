@@ -40,9 +40,9 @@ void Sphere::draw()
 	aie::Gizmos::add2DLine(pos, pos + end, glm::vec4(1, 1, 1, 1));
 }
 
-bool Sphere::detectCollision(CData& data, PhysicsObject& obj)
+bool Sphere::detectCollision(PhysicsObject& obj)
 {
-	return obj.detectCollision(data, *this);
+	return obj.detectCollision(CData(), *this);
 }
 
 bool Sphere::detectCollision(CData& data, Plane& plane)
@@ -54,15 +54,13 @@ bool Sphere::detectCollision(CData& data, Sphere& sphere)
 {
 	glm::vec2 delta = sphere.m_position - m_position;
 	float distance = glm::length(delta);
-
 	float intersection = m_radius + sphere.m_radius - distance;
 
 	if (intersection <= 0) return false;
 
 	data.contactForce = 0.5f * (distance - (m_radius + sphere.m_radius)) * delta / distance;
-	setPosition(m_position + data.contactForce);
-	sphere.setPosition(sphere.m_position - data.contactForce);
-
+	
+	sphere.setPositions(*this, data.contactForce);
 	return rigidResolve(sphere, 0.5f * (m_position + sphere.m_position), NULL);
 }
 
@@ -71,7 +69,11 @@ bool Sphere::detectCollision(CData& data, Box& box)
 	return box.detectCollision(data, *this);
 }
 
-bool Sphere::detectCollision(glm::vec2& point)
+bool Sphere::detectCollision(glm::vec2& point, glm::vec2& pointOut)
 {
+	pointOut = point - m_position;
+	if (glm::dot(pointOut, pointOut) < m_radius * m_radius)
+		return true;
+
 	return false;
 }

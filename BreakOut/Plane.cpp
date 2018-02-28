@@ -1,7 +1,6 @@
 #include "Plane.h"
 #include "Sphere.h"
 #include "Box.h"
-#include<glm\vec2.hpp>
 #include<glm\ext.hpp>
 
 Plane::Plane() : PhysicsObject(PLANE, 1, true), m_normal(glm::vec2(0, 1)), m_distanceFromOrigin(0)
@@ -41,12 +40,13 @@ void Plane::draw()
 	aie::Gizmos::add2DLine(glm::vec2(start.x, start.y), glm::vec2(end.x, end.y), m_colour);
 }
 
-bool Plane::detectCollision(CData& data, PhysicsObject& obj)
+bool Plane::detectCollision(PhysicsObject& obj)
 {
-	return obj.detectCollision(data, *this);
+	return obj.detectCollision(CData(), *this);
 }
 
 bool Plane::detectCollision(CData& data, Plane& plane)		{ return false; }	//No need to test for plane vs plane
+
 bool Plane::detectCollision(CData& data, Sphere& sphere)	
 { 
 	data.normal = m_normal;
@@ -57,29 +57,76 @@ bool Plane::detectCollision(CData& data, Sphere& sphere)
 		data.normal *= -1;
 	}
 
-	data.penetration = sphere.getRadius() - sphereDistance;
-	if (data.penetration <= 0) return false;
-
-	data.contact = sphere.getPosition() + (data.normal * sphere.getRadius());
+	if (sphere.getRadius() - sphereDistance <= 0) return false;
 
 	sphere.setPosition(sphere.getPosition() - m_normal * (sphere.getRadius() - sphereDistance));
-	return resolveCollision(&sphere, data);
+	return resolveCollision(&sphere, (sphere.getPosition() + (data.normal * sphere.getRadius())) );
 }
+
 bool Plane::detectCollision(CData& data, Box& box)			
 { 
+	float contactV = 0;
+	float radius = 0.5f * std::fminf(box.getHalfExtents().x, box.getHalfExtents().y);
+
 	glm::vec2 planeOrigin = m_normal * m_distanceFromOrigin;
-	return box.detectCollision(data, *this); 
+	float comFromPlane = glm::dot(box.getPosition() - planeOrigin, m_normal);
+
+	glm::vec2 contactVelocity(0, 0);
+
+	for (int i = 0; i < box.corner_Size; i++)
+	{
+		glm::vec2 p = box.getCorner(i);
+		float distanceFromPlane = glm::dot(p - planeOrigin, m_normal);
+
+		glm::vec2 local = box.getCornerLocal(i);
+		// is the minus here correct?
+		glm::vec2 cv = box.getVelocity() - box.getRotVelocity() * (-local.y * box.getLocalXAxis() + local.x * box.getLocalYAxis());
+		float velocityIntoPlane = glm::dot(cv, m_normal);
+
+		if ((distanceFromPlane > 0 && comFromPlane < 0 && velocityIntoPlane >= 0) || distanceFromPlane < 0 && comFromPlane > 0 && velocityIntoPlane <= 0)
+		{
+			data.setData(p);
+			contactV += velocityIntoPlane;
+			contactVelocity += cv;
+
+			if ((comFromPlane >= 0 && data.penetration > distanceFromPlane) || (comFromPlane < 0 && data.penetration < distanceFromPlane))
+				data.penetration = distanceFromPlane;
+		}
+	}
+
+	if (data.numberOfContacts == 0) return false;
+
+	float collisionV = contactV / data.numberOfContacts;
+	contactVelocity /= data.numberOfContacts;
+	glm::vec2 acceleration = -m_normal * ((1.0f + box.getBounciness()) * collisionV);
+	glm::vec2 localContact = (data.contact / data.numberOfContacts);
+	float r = glm::dot(localContact - box.getPosition(), glm::vec2(m_normal.y, -m_normal.x));
+	//float mass0 = 1.0f / (1.0f / box.getMass() + (r*r) / box.getInertia());
+
+
+	box.setPosition(box.getPosition() - m_normal * data.penetration);
+	//return box.applyForce(acceleration * mass0, localContact);
+
+	return resolveCollision(&box, localContact, &contactVelocity, r);
 }
-bool Plane::detectCollision(glm::vec2& point)
+
+bool Plane::detectCollision(glm::vec2 & point, glm::vec2 & pointOut)
 {
 	if (distance(point) == 0) return true;
 	else return false;
 }
 
-bool Plane::resolveCollision(RigidBody* rigidBody, CData& data)
-{
-	float elasticity = (m_bounciness + rigidBody->getBounciness()) / 2.0f;
-	float RHS = (glm::dot(-(1 + elasticity) * rigidBody->getVelocity(), m_normal) / (1 / rigidBody->getMass()));
 
-	return rigidBody->applyForce((m_normal * RHS), data.contact - rigidBody->getPosition());
+//Private Functions
+
+bool Plane::resolveCollision(RigidBody* rigidBody, glm::vec2 contact, glm::vec2* contactVelocity /*= NULL*/, float r /*=0*/)
+{
+	glm::vec2 velocity = contactVelocity ? *contactVelocity : rigidBody->getVelocity();
+	float elasticity = (m_bounciness + rigidBody->getBounciness()) / 2.0f;
+
+	float mass0 = 1.0f / (1.0f / rigidBody->getMass() + (r*r) / rigidBody->getInertia());
+
+	float RHS = glm::dot(-(1 + elasticity) * velocity, m_normal) * mass0;
+
+	return rigidBody->applyForce((m_normal * RHS), contact - rigidBody->getPosition());
 }
