@@ -3,14 +3,14 @@
 #include <math.h>
 
 
-RigidBody::RigidBody(ShapeType shapeTypeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float bounciness, float linearDrag, float rotationalDrag, bool isStatic)
+RigidBody::RigidBody(ShapeType shapeTypeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float bounciness, bool isStatic, float linearDrag, float rotationalDrag)
 	: PhysicsObject(shapeTypeID, bounciness, isStatic), m_position(position), m_velocity(velocity), m_rotation(rotation), m_mass(mass), m_linearDrag(linearDrag), m_rotationalDrag(rotationalDrag) {}
 RigidBody::~RigidBody() {}
 
 
 void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
-	if (isStatic())
+	if (m_isStatic)
 		return;
 
     m_position += m_velocity * timeStep;
@@ -25,11 +25,6 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 		m_velocity = glm::vec2(0, 0);
 	if (abs(m_rotationalVelocity) < MIN_ROTATION_THRESHOLD)
 		m_rotationalVelocity = 0;
-}
-
-void RigidBody::debug()
-{
-
 }
 
 
@@ -47,28 +42,18 @@ bool RigidBody::applyForceToActor(RigidBody& actor2, glm::vec2 force, glm::vec2 
 	return actor2.applyForce(force, pos2);
 }
 
-bool RigidBody::rigidResolve(RigidBody& rigid, glm::vec2 contact, glm::vec2* collisionNormal)
+bool RigidBody::rigidResolve(RigidBody& rigid, glm::vec2 contact, glm::vec2 normal)
 {
-	float m1 = m_mass, m2 = rigid.getMass();
-	glm::vec2 pos1 = m_position, pos2 = rigid.getPosition();
-
-	if (isStatic())	m1 = INFINITY;
-	if (rigid.isStatic())	m2 = INFINITY;
-
-	glm::vec2 normal = collisionNormal ? *collisionNormal : glm::normalize(pos2 - pos1);
 	glm::vec2 perp(normal.y, -normal.x);
+	float r1 = glm::dot(contact - m_position, -perp),						r2 = glm::dot(contact - rigid.getPosition(), perp);
+	float v1 = glm::dot(m_velocity, normal) - r1 * m_rotationalVelocity,	v2 = glm::dot(rigid.getVelocity(), normal) + r2 * rigid.getRotVelocity();
 
-	glm::vec2 R(glm::dot(contact - pos1, -perp), glm::dot(contact - pos2, perp));
-	glm::vec2 V(glm::dot(m_velocity, normal) - R.x * m_rotationalVelocity, glm::dot(rigid.getVelocity(), normal) + R.y * rigid.getRotVelocity());
+	if (v1 <= v2) return false;
 
+	float mass1 = 1.0f / (1.0f / m_mass + (r1*r1) / m_inertia),		mass2 = 1.0f / (1.0f / rigid.getMass() + (r2*r2) / rigid.getInertia());
+	glm::vec2 force = getElasticity(&rigid) * mass1 * mass2 / (mass1 + mass2) * (v1 - v2) * normal;
 
-	if (V.x <= V.y) return false;
-
-	glm::vec2 M(1.0f / (1.0f / m1 + (R.x * R.x) / m_inertia), 1.0f / (1.0f / m2 + (R.y * R.y) / rigid.getInertia()));
-	float elasticity = (m_bounciness + rigid.getBounciness()) / 2.0f;
-	glm::vec2 force = (1.0f + elasticity) * M.x * M.y / (M.x + M.y) * (V.x - V.y) * normal;
-
-	return applyForceToActor(rigid, force, contact - pos1, contact - pos2);
+	return applyForceToActor(rigid, force, contact - m_position, contact - rigid.getPosition());
 }
 
 void RigidBody::setPosition(glm::vec2 position)
@@ -78,22 +63,11 @@ void RigidBody::setPosition(glm::vec2 position)
 
 void RigidBody::setPositions(RigidBody& otherRigid, glm::vec2 contactForce)
 {
-	m_position = (m_position - contactForce);
-	otherRigid.m_position = (otherRigid.m_position + contactForce);
-}
+	if (!m_isStatic && !otherRigid.m_isStatic)
+		contactForce *= 0.5f;
 
-void RigidBody::setLinearDrag(float drag)
-{
-	drag = (float)fmin(drag, 1);
-	drag = (float)fmax(drag, 0);
-
-	m_linearDrag = drag;
-}
-
-void RigidBody::setRotationalDrag(float drag)
-{
-	drag = (float)fmin(drag, 1);
-	drag = (float)fmax(drag, 0);
-
-	m_rotationalDrag = drag;
+	if (!m_isStatic) 
+		m_position -= contactForce;
+	if (!otherRigid.m_isStatic) 
+		otherRigid.m_position += contactForce;
 }

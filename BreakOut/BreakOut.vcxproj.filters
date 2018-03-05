@@ -31,12 +31,6 @@
     <Filter Include="Source Files\Physics\PhysicsObjects\RigidBodies">
       <UniqueIdentifier>{867fb407-6f51-4a1a-9f68-cc684811570d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Physics\Handlers">
-      <UniqueIdentifier>{243b1c84-16c9-4802-93e4-d9373b5b215b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Physics\Handlers">
-      <UniqueIdentifier>{2a674fdb-9dc8-450a-91d3-a13e6db3a271}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Physics\Common Headers">
       <UniqueIdentifier>{ef6580ec-5eea-47f3-85d7-4bbec674d9df}</UniqueIdentifier>
     </Filter>
@@ -69,12 +63,6 @@
     <ClCompile Include="PhysicsObject.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Projection.cpp">
-      <Filter>Source Files\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="CResolution.cpp">
-      <Filter>Source Files\Physics\Handlers</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BreakOutApp.h">
@@ -100,12 +88,6 @@
     </ClInclude>
     <ClInclude Include="Spring.h">
       <Filter>Header Files\Physics\PhysicsObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Projection.h">
-      <Filter>Header Files\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="CResolution.h">
-      <Filter>Header Files\Physics\Handlers</Filter>
     </ClInclude>
     <ClInclude Include="ShapeEnum.h">
       <Filter>Header Files\Physics\Common Headers</Filter>

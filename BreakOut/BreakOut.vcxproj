@@ -165,12 +165,10 @@
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="BreakOutApp.cpp" />
-    <ClCompile Include="CResolution.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="PhysicsScene.cpp" />
     <ClCompile Include="Plane.cpp" />
-    <ClCompile Include="Projection.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Spring.cpp" />
@@ -179,11 +177,9 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="BreakOutApp.h" />
     <ClInclude Include="CollisionDataStruct.h" />
-    <ClInclude Include="CResolution.h" />
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="PhysicsScene.h" />
     <ClInclude Include="Plane.h" />
-    <ClInclude Include="Projection.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="ShapeEnum.h" />
     <ClInclude Include="Sphere.h" />

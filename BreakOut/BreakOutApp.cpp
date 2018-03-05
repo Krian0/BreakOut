@@ -18,48 +18,48 @@ BreakOutApp::~BreakOutApp()
 
 bool BreakOutApp::startup() 
 {
+	srand(time(NULL));
+
 	aie::Gizmos::create(255U, 255U, 65535U, 65535U);
-	
-	m_2dRenderer = new aie::Renderer2D();
-	m_font = new aie::Font("../bin/font/consolas.ttf", 32);		//TODO: remember to change this when redistributing a build! The following path would be used instead: "./font/consolas.ttf"
+	m_2dRenderer	= new aie::Renderer2D();
+	m_font			= new aie::Font("../bin/font/consolas.ttf", 32);		//TODO: remember to change this when redistributing a build! The following path would be used instead: "./font/consolas.ttf"
+	m_fontSmall		= new aie::Font("../bin/font/consolas.ttf", 24);
+	m_textureCannon = new aie::Texture("../bin/textures/cannonWhite.png");
+
 
 	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setGravity(glm::vec2(0, -9.8f));
-	m_physicsScene->setTimeStep(0.01f);
+	m_physicsScene->setGravity(gravity);
+	m_physicsScene->setTimeStep(m_timeStep);
 
-	glm::vec4 c(0, 0, 1, 1);
+	//Planes
+	m_physicsScene->addActor(new Plane(glm::vec2(0, -1), 80, 0.75f));		//Ground plane
+	m_physicsScene->addActor(new Plane(glm::vec2(-1, 0), 85, 0.75f));		//Left plane
+	m_physicsScene->addActor(new Plane(glm::vec2(1, 0), 90, 0.75f));		//Right plane
+	m_physicsScene->addActor(new Plane(glm::vec2(0, 1), 50, 0.75f));		//Sky plane
 
-	glm::vec2 zeroVec(0, 0);
-	glm::vec2 thirtyVec(30, 0);
+	//Static shapes
+	m_physicsScene->addActor(new Box(glm::vec2( 70, 20), zeroVec, 2, 3, 0.45f, 8, 8, true));
+	m_physicsScene->addActor(new Box(glm::vec2(-20, 30), zeroVec, 0, 5, 0.50f, 16, 4, true));
+	m_physicsScene->addActor(new Sphere(glm::vec2(10, -20), zeroVec, 4, 0.8f, 6, true));
 
-	//s1 = new Sphere(zeroVec, zeroVec, 0.04f, 1, 3, c);
-	//s2 = new Sphere(thirtyVec, -thirtyVec, 0.04f, 1, 3, c);
-	//sa = new Sphere(glm::vec2(0, 10), -thirtyVec, 0.04f, 0.8f, 3, c);
-	//sb = new Sphere(glm::vec2(10, 0), -thirtyVec, 0.04f, 0.6f, 3, c);
-	//sc = new Sphere(glm::vec2(0, 20), -thirtyVec, 0.04f, 0.7f, 3, c);
-	//m_physicsScene->addActor(s1);
-	//m_physicsScene->addActor(s2);
-	//m_physicsScene->addActor(sa);
-	//m_physicsScene->addActor(sb);
-	//m_physicsScene->addActor(sc);
+	//Water Surface (Rope)
+	Sphere* ballA, * ballB;
+	glm::vec4 blue(0, 0, 1, 0);
+	float radius = 1.5, mass = 1, bounce = 0.4f;
 
-	b1  = new Box(zeroVec, zeroVec, 30, 0.04f, 1, 4, 4);
-	//b2 = new Box(thirtyVec, -thirtyVec, 45, 0.04f, 1, 4, 4);
-	m_physicsScene->addActor(b1);
-	//m_physicsScene->addActor(b2);
+	ballA = new Sphere(glm::vec2(-82, -30), zeroVec, mass, bounce, radius, true, &blue);
+	m_physicsScene->addActor(ballA);
 	
-	Plane* ground		= new Plane(glm::vec2(0, -1), 50, 0.75, c);
-	Plane* sideLeft		= new Plane(glm::vec2(-1, 0), 40, 0.75, c);
-	Plane* sideRight	= new Plane(glm::vec2(1, 0), 40, 0.75, c);
-	Plane* sky			= new Plane(glm::vec2(0, 1), 50, 0.75, c);
+	int numberBalls = 34;
+	for (int i = 1; i < numberBalls; i++) 
+	{ 
+		bool isStatic = (i == numberBalls - 1) ? true : false;
+		ballB = new Sphere(ballA->getPosition() + glm::vec2(radius * 3.42, 0), zeroVec, mass, bounce, radius, isStatic, &blue);
+		m_physicsScene->addActor(ballB);
+		m_physicsScene->addActor(new Spring(ballA, ballB, radius * 0.50, 98, .8f));
+		ballA = ballB;
+	}
 
-
-
-
-	m_physicsScene->addActor(ground);
-	m_physicsScene->addActor(sideLeft);
-	m_physicsScene->addActor(sideRight);
-	m_physicsScene->addActor(sky);
 
 	return true;
 }
@@ -73,47 +73,44 @@ void BreakOutApp::shutdown()
 void BreakOutApp::update(float deltaTime) 
 {
 	aie::Input* input = aie::Input::getInstance();
-
-
 	aie::Gizmos::clear();
+	m_clickDelay += deltaTime;
+
+	mousePos.x = input->getMouseX();
+	mousePos.y = input->getMouseY();
 
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->draw();
 
-
-	/*static const glm::vec4 colours[] =
+	if (input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_LEFT) && m_userCreatedProjectiles.size() < 10 && m_clickDelay > 0.7)
 	{
-		glm::vec4(1, 0, 0, 1), glm::vec4(0, 1, 0, 1),
-		glm::vec4(0, 0, 1, 1), glm::vec4(0.8f, 0, 0.5f, 1),
-		glm::vec4(0, 1, 1, 1)
-	};
-
-
-	static const int rows = 5;
-	static const int columns = 10;
-	static const int hSpace = 1;
-	static const int vSpace = 1;
-
-	static const glm::vec2 scrExtents(100, 50);
-	static const glm::vec2 boxExtents(7, 3);
-	static const glm::vec2 startPos(-(columns >> 1)*((boxExtents.x * 2) + vSpace) + boxExtents.x + (vSpace / 2.0f), scrExtents.y - ((boxExtents.y * 2) + hSpace));
-
-
-	glm::vec2 pos;
-	for (int y = 0; y < rows; y++)
-	{
-		pos = glm::vec2(startPos.x, startPos.y - (y* ((boxExtents.y * 2) + hSpace)));
-		for (int x = 0; x < columns; x++)
+		m_clickDelay = 0;
+		if (m_canLeftClick)
 		{
-			aie::Gizmos::add2DAABBFilled(pos, boxExtents, colours[y]);
-			pos.x += (boxExtents.x * 2) + vSpace;
+			m_canLeftClick = false;
+			
+			glm::vec2 dir = glm::normalize(mousePos - cannonVec);
+			float length = glm::distance(mousePos, cannonVec);
+			m_userCreatedProjectiles.push_back(getRandomShape(dir, length / 3));
+			m_physicsScene->addActor(m_userCreatedProjectiles.back());
+		}
+	}
+	if (input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT) && m_userCreatedProjectiles.size() >= 1 && m_clickDelay > 0.22)
+	{
+		m_clickDelay = 0;
+		if (m_canRightClick)
+		{
+			m_canRightClick = false;
+			
+			m_physicsScene->removeActor(m_userCreatedProjectiles.back());
+			m_userCreatedProjectiles.pop_back();
 		}
 	}
 
-
-	aie::Gizmos::add2DCircle(glm::vec2(0, -35), 3, 12, glm::vec4(1, 1, 0, 1));
-	aie::Gizmos::add2DAABBFilled(glm::vec2(0, -40), glm::vec2(12, 2), glm::vec4(1, 0, 1, 1));*/
-
+	if (!m_canLeftClick && input->isMouseButtonUp(aie::INPUT_MOUSE_BUTTON_LEFT))
+		m_canLeftClick = true;
+	if (!m_canRightClick && input->isMouseButtonUp(aie::INPUT_MOUSE_BUTTON_RIGHT))
+		m_canRightClick = true;
 
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
@@ -125,33 +122,39 @@ void BreakOutApp::draw()
 	m_2dRenderer->begin();
 
 
+	m_2dRenderer->drawSprite(m_textureCannon, cannonVec.x - 90, cannonVec.y - 30, 100, 100, 0.2);
+	m_2dRenderer->drawLine(cannonVec.x + 52, cannonVec.y + 58, mousePos.x, mousePos.y, 4, 100);
+
+	std::string shapeAmount = "Shapes on screen: " + std::to_string(m_userCreatedProjectiles.size());
+	m_2dRenderer->drawText(m_fontSmall, shapeAmount.c_str(), 160, 50, 3);
+	m_2dRenderer->drawText(m_fontSmall, "Quit: ESC  |  Left Mouse: Shoot a shape  |  Right Mouse: Remove last shape", 160, 10, 2);
+	
 	static float aspectRatio = 16 / 9.f;
 	aie::Gizmos::draw2D(glm::ortho<float>(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -1.0f, 1.0f));
-
 	
-	m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
+	
 	m_2dRenderer->end();
 }
 
-
-
-void BreakOutApp::setupContinuousDemo(glm::vec2 startPos, float angle, float speed, float gravity)
+RigidBody* BreakOutApp::getRandomShape(glm::vec2 normal, float distance)
 {
-	//float t = 0; 
-	//float tStep = 0.5f; 
-	//float radius = 1.0f; 
-	//int segments = 12; 
-	//glm::vec4 colour = glm::vec4(1, 1, 0, 1); 
-	//
-	//float angleInRad = angle * 3.14159f / 180.0f;
-	//glm::vec2 initialVelocity(cosf(angleInRad) * speed, sinf(angleInRad) * speed);
-	//while (t <= 5) 
-	//{ 
-	//	float Dx = startPos.x + (initialVelocity.x * t);
-	//	float Dy = startPos.y + (initialVelocity.y * t) + ((gravity * (t * t)) / 2);
+	int shapeID			= rand() % BOX + SPHERE;
+	float mass			= (float)(rand() % 200 + 20) / 10;
+	float bounciness	= (float)(rand() % 80 + 20) / 100;
 
 
-	//	aie::Gizmos::add2DCircle(glm::vec2(Dx, Dy), radius, segments, colour); 
-	//	t += tStep;
-	//} 
+	if (shapeID == SPHERE)
+	{
+		float radius = (float)(rand() % 750 + 100) / 100;
+		return new Sphere(shootPos, normal * distance, mass*0.8f, bounciness*1.2f, radius);
+	}
+	else if (shapeID == BOX)
+	{
+		float rotation	= (float)(rand() % 500 + 1) / 100;
+		float width		= (float)(rand() % 60 + 10) / 10;
+		float height	= (float)(rand() % 60 + 10) / 10;
+		return new Box(shootPos, normal * distance, rotation, mass*2.f, bounciness*0.5f, width, height);
+	}
+
+	return nullptr;
 }

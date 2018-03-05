@@ -7,12 +7,12 @@ class PhysicsScene
 {
 public:
 	PhysicsScene();
+	PhysicsScene(glm::vec2 gravity, float timeStep);
 	~PhysicsScene();
 
 
 	void addActor(PhysicsObject* actor);
 	void removeActor(PhysicsObject* actor);
-	void debugScene();
 	void update(float deltaTime);
 	void draw();
 
@@ -20,11 +20,15 @@ public:
 
 	void setGravity(const glm::vec2 gravity) { m_gravity = gravity; }
 	void setTimeStep(const float timeStep) { m_timeStep = timeStep; }
+	
 	glm::vec2 getGravity() const { return m_gravity; }
 	float getTimeStep() const { return m_timeStep; }
 
 
-protected:
+private:
+	//Return true if both shapes are static and neither are planes, both shapes are Planes, or second shape is a Spring
+	bool invalidShapePair(PhysicsObject* actor1, PhysicsObject* actor2);
+
 	std::list<PhysicsObject*> m_actors;
 	glm::vec2 m_gravity;
 	float m_timeStep;
