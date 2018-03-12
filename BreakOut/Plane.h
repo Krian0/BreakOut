@@ -7,14 +7,12 @@ class Plane : public PhysicsObject
 
 public:
 	Plane();
-	Plane(glm::vec2 normal, float distance, float bounciness);
-	Plane(glm::vec2 pointA, glm::vec2 pointB, float bounciness);
+	Plane(vec2 normal, float distance, float bounciness);
+	Plane(vec2 pointA, vec2 pointB, float bounciness);
 	~Plane();
 
 
-	void resetVelocity() {}
-
-	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
+	virtual void fixedUpdate(vec2 gravity, float timeStep);
 	virtual void draw();
 
 
@@ -22,20 +20,26 @@ public:
 	bool detectCollision(CData& data, Plane& plane) override;
 	bool detectCollision(CData& data, Sphere& sphere) override;
 	bool detectCollision(CData& data, Box& box) override;
-	bool detectCollision(glm::vec2& point, glm::vec2& pointOut) override;
+	bool detectCollision(vec2& point);
 
-	float distance(glm::vec2 point)	 { return (glm::dot(point, m_normal) - m_distanceFromOrigin); }
 
-	glm::vec2 getNormal()			{ return m_normal; }
-	glm::vec2 getPlaneOrigin()		{ return m_planeOrigin; }
+	float distanceToPoint(vec2 point);
+	float getElasticity(RigidBody* obj);
+
+	vec2 getRightPerp() { return vec2(-m_normal.y, m_normal.x); }
+	vec2 getLeftPerp()	{ return vec2(m_normal.y, -m_normal.x); }
+
+	vec2 getNormal()				{ return m_normal; }
+	vec2 getPlaneOrigin()			{ return m_planeOrigin; }
 	float getDistanceFromOrigin()	{ return m_distanceFromOrigin; }
 	float getBounciness()			{ return m_bounciness; }
 
 
 protected:
-	bool resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2 contactVelocity, float r = 0);
+	bool resolveCollision(RigidBody* actor2, vec2 contact, vec2 contactVelocity, float r = 0);
 
-	glm::vec2 m_normal;
-	glm::vec2 m_planeOrigin;
+	vec2  m_normal;
+	vec2  m_planeOrigin;
 	float m_distanceFromOrigin;
+	float m_bounciness;
 };

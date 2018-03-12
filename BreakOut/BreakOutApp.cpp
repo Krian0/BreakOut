@@ -18,7 +18,7 @@ BreakOutApp::~BreakOutApp()
 
 bool BreakOutApp::startup() 
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	aie::Gizmos::create(255U, 255U, 65535U, 65535U);
 	m_2dRenderer	= new aie::Renderer2D();
@@ -32,7 +32,7 @@ bool BreakOutApp::startup()
 	m_physicsScene->setTimeStep(m_timeStep);
 
 	//Planes
-	m_physicsScene->addActor(new Plane(glm::vec2(0, -1), 80, 0.75f));		//Ground plane
+	m_physicsScene->addActor(new Plane(glm::vec2(0, -1), 30, 0.75f));		//Ground plane
 	m_physicsScene->addActor(new Plane(glm::vec2(-1, 0), 85, 0.75f));		//Left plane
 	m_physicsScene->addActor(new Plane(glm::vec2(1, 0), 90, 0.75f));		//Right plane
 	m_physicsScene->addActor(new Plane(glm::vec2(0, 1), 50, 0.75f));		//Sky plane
@@ -43,22 +43,28 @@ bool BreakOutApp::startup()
 	m_physicsScene->addActor(new Sphere(glm::vec2(10, -20), zeroVec, 4, 0.8f, 6, true));
 
 	//Water Surface (Rope)
-	Sphere* ballA, * ballB;
-	glm::vec4 blue(0, 0, 1, 0);
-	float radius = 1.5, mass = 1, bounce = 0.4f;
+	//Sphere* ballA, * ballB;
+	//glm::vec4 blue(0, 0, 1, 0);
+	//float radius = 1.5, mass = 1, bounce = 0.4f;
 
-	ballA = new Sphere(glm::vec2(-82, -30), zeroVec, mass, bounce, radius, true, &blue);
-	m_physicsScene->addActor(ballA);
-	
-	int numberBalls = 34;
-	for (int i = 1; i < numberBalls; i++) 
-	{ 
-		bool isStatic = (i == numberBalls - 1) ? true : false;
-		ballB = new Sphere(ballA->getPosition() + glm::vec2(radius * 3.42, 0), zeroVec, mass, bounce, radius, isStatic, &blue);
-		m_physicsScene->addActor(ballB);
-		m_physicsScene->addActor(new Spring(ballA, ballB, radius * 0.50, 98, .8f));
-		ballA = ballB;
-	}
+	//ballA = new Sphere(glm::vec2(-82, -30), zeroVec, mass, bounce, radius, true, &blue);
+	//m_physicsScene->addActor(ballA);
+	//
+	//int numberBalls = 34;
+	//for (int i = 1; i < numberBalls; i++) 
+	//{ 
+	//	bool isStatic = (i == numberBalls - 1) ? true : false;
+	//	ballB = new Sphere(ballA->getPosition() + glm::vec2(radius * 3.42, 0), zeroVec, mass, bounce, radius, isStatic, &blue);
+	//	m_physicsScene->addActor(ballB);
+	//	m_physicsScene->addActor(new Spring(ballA, ballB, radius * 0.50, 98, .8f));
+	//	ballA = ballB;
+	//}
+
+
+
+
+	m_physicsScene->addActor(new Box(glm::vec2(-20, -20), zeroVec, 0, 20, 0.45f, 12, 2));
+	m_physicsScene->addActor(new Box(glm::vec2(-20, 30), glm::vec2(1, -2), 2, 17, 0.45f, 2, 2));
 
 
 	return true;
@@ -76,8 +82,8 @@ void BreakOutApp::update(float deltaTime)
 	aie::Gizmos::clear();
 	m_clickDelay += deltaTime;
 
-	mousePos.x = input->getMouseX();
-	mousePos.y = input->getMouseY();
+	mousePos.x = (float)input->getMouseX();
+	mousePos.y = (float)input->getMouseY();
 
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->draw();
@@ -89,10 +95,13 @@ void BreakOutApp::update(float deltaTime)
 		{
 			m_canLeftClick = false;
 			
-			glm::vec2 dir = glm::normalize(mousePos - cannonVec);
+			vec2 dir = glm::normalize(mousePos - cannonVec);
 			float length = glm::distance(mousePos, cannonVec);
-			m_userCreatedProjectiles.push_back(getRandomShape(dir, length / 3));
-			m_physicsScene->addActor(m_userCreatedProjectiles.back());
+
+			RigidBody* shape = getRandomShape(dir, length / 3);
+
+			m_userCreatedProjectiles.push_back(shape);
+			m_physicsScene->addActor(shape);
 		}
 	}
 	if (input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT) && m_userCreatedProjectiles.size() >= 1 && m_clickDelay > 0.22)
@@ -122,7 +131,7 @@ void BreakOutApp::draw()
 	m_2dRenderer->begin();
 
 
-	m_2dRenderer->drawSprite(m_textureCannon, cannonVec.x - 90, cannonVec.y - 30, 100, 100, 0.2);
+	m_2dRenderer->drawSprite(m_textureCannon, cannonVec.x - 90, cannonVec.y - 30, 100, 100, 0.2f);
 	m_2dRenderer->drawLine(cannonVec.x + 52, cannonVec.y + 58, mousePos.x, mousePos.y, 4, 100);
 
 	std::string shapeAmount = "Shapes on screen: " + std::to_string(m_userCreatedProjectiles.size());

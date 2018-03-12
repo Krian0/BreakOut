@@ -165,8 +165,8 @@
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="BreakOutApp.cpp" />
+    <ClCompile Include="CollisionData.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="PhysicsScene.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="RigidBody.cpp" />
@@ -176,7 +176,7 @@
   <ItemGroup>
     <ClInclude Include="Box.h" />
     <ClInclude Include="BreakOutApp.h" />
-    <ClInclude Include="CollisionDataStruct.h" />
+    <ClInclude Include="CollisionData.h" />
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="PhysicsScene.h" />
     <ClInclude Include="Plane.h" />

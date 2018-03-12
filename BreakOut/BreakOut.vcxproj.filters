@@ -31,8 +31,11 @@
     <Filter Include="Source Files\Physics\PhysicsObjects\RigidBodies">
       <UniqueIdentifier>{867fb407-6f51-4a1a-9f68-cc684811570d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Physics\Common Headers">
+    <Filter Include="Header Files\Physics\Helpers">
       <UniqueIdentifier>{ef6580ec-5eea-47f3-85d7-4bbec674d9df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{aab7b298-ec85-4ab1-87fe-63a4600304d8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -54,14 +57,14 @@
     <ClCompile Include="PhysicsScene.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
-      <Filter>Source Files\Physics\PhysicsObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Spring.cpp">
       <Filter>Source Files\Physics\PhysicsObjects</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsObject.cpp">
-      <Filter>Source Files\Physics</Filter>
+    <ClCompile Include="CollisionData.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Source Files\Physics\PhysicsObjects\RigidBodies</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -80,20 +83,20 @@
     <ClInclude Include="Plane.h">
       <Filter>Header Files\Physics\PhysicsObjects</Filter>
     </ClInclude>
-    <ClInclude Include="RigidBody.h">
-      <Filter>Header Files\Physics\PhysicsObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsObject.h">
-      <Filter>Header Files\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="Spring.h">
       <Filter>Header Files\Physics\PhysicsObjects</Filter>
     </ClInclude>
     <ClInclude Include="ShapeEnum.h">
-      <Filter>Header Files\Physics\Common Headers</Filter>
+      <Filter>Header Files\Physics\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionDataStruct.h">
-      <Filter>Header Files\Physics\Common Headers</Filter>
+    <ClInclude Include="CollisionData.h">
+      <Filter>Header Files\Physics\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Header Files\Physics\PhysicsObjects\RigidBodies</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsObject.h">
+      <Filter>Header Files\Physics\PhysicsObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -13,11 +13,10 @@ public:
 	void fixedUpdate(glm::vec2 gravity, float timeStep);
 	void draw();
 	
-	bool detectCollision(PhysicsObject& obj) { return false; }
-	bool detectCollision(CData& data, Plane& plane) { return false; }
-	bool detectCollision(CData& data, Sphere& sphere) { return false; }
-	bool detectCollision(CData& data, Box& box) { return false; }
-	bool detectCollision(glm::vec2& point, glm::vec2& pointOut) { return false; }
+	bool detectCollision(PhysicsObject& obj)			{ return false; }
+	bool detectCollision(CData& data, Plane& plane)		{ return false; }
+	bool detectCollision(CData& data, Sphere& sphere)	{ return false; }
+	bool detectCollision(CData& data, Box& box)			{ return false; }
 
 
 private:
@@ -25,8 +24,8 @@ private:
 	RigidBody* m_body1;
 	RigidBody* m_body2;
 	
-	glm::vec2 m_contact1; 
-	glm::vec2 m_contact2; 
+	vec2 m_contact1; 
+	vec2 m_contact2; 
 	
 	float m_damping; 
 	float m_restLength;

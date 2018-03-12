@@ -2,28 +2,54 @@
 #include "PhysicsScene.h"
 
 
-PhysicsScene::PhysicsScene() : m_timeStep(0.01f), m_gravity(glm::vec2(0, 0)) {}
-PhysicsScene::PhysicsScene(glm::vec2 gravity, float timeStep) : m_gravity(gravity), m_timeStep(timeStep) {}
+
+PhysicsScene::PhysicsScene() : m_timeStep(0.01f), m_gravity(vec2(0, 0)) 
+{
+	setUpValidShapePairs();
+}
+PhysicsScene::PhysicsScene(vec2 gravity, float timeStep) : m_gravity(gravity), m_timeStep(timeStep) 
+{
+	setUpValidShapePairs();
+}
 PhysicsScene::~PhysicsScene() 
 {
-	for (auto anActor : m_actors)	delete anActor;
+	for (auto actor : m_actors)
+		delete actor;
+	m_actors.clear();
 }
 
 
-void PhysicsScene::addActor(PhysicsObject* actor)		{ m_actors.push_back(actor); }
-void PhysicsScene::removeActor(PhysicsObject* actor)	{ m_actors.remove(actor); }
+//Public Functions:
+
+void PhysicsScene::addActor(PhysicsObject* actor)		
+{
+	m_actors.push_back(actor); 
+}
+void PhysicsScene::removeActor(PhysicsObject* actor)	
+{ 
+	auto iterator = std::find(m_actors.begin(), m_actors.end(), actor);
+	if (iterator == m_actors.end()) return;
+	m_actors.erase(iterator);
+}
+
+void PhysicsScene::removeAndDeleteActor(PhysicsObject* actor)
+{
+	auto iterator = std::find(m_actors.begin(), m_actors.end(), actor);
+	if (iterator == m_actors.end()) return;
+	delete &actor;
+	m_actors.erase(iterator);
+}
 
 
 void PhysicsScene::update(float deltaTime)
 {
-
-	static float accumulatedTime = 0.0f;
+	 static float accumulatedTime = 0.0f;
 	accumulatedTime += deltaTime;
 
 	while (accumulatedTime >= m_timeStep)
 	{
-		for (auto anActor : m_actors)
-			anActor->fixedUpdate(m_gravity, m_timeStep);
+		for (auto actor : m_actors)
+			actor->fixedUpdate(m_gravity, m_timeStep);
 		
 		accumulatedTime -= m_timeStep;
 
@@ -40,29 +66,36 @@ void PhysicsScene::draw()
 
 void PhysicsScene::checkForCollision()
 {
-	for (auto it = m_actors.begin(); it != m_actors.end(); it++)				//Loop through each actor, check if they collide with each actor after it in the list, so long as they are both shapes that we want to check.
+	for (int first = 0; first < m_actors.size(); first++)
 	{
-		PhysicsObject* obj1 = (*it);
-		if (obj1->getShapeID() == SPRING) continue;
+		if (m_actors[first]->getShapeID() == SPRING) continue;
 
-		for (auto it2 = std::next(it); it2 != m_actors.end(); it2++)
-		{
-			PhysicsObject* obj2 = (*it2);
-			
-			if (invalidShapePair(obj1, obj2)) 
-				continue;
-				
-			obj1->detectCollision(*obj2);
-		}
+		for (int second = (first + 1); second < m_actors.size(); second++)
+			if (isValidShapePair(m_actors[first], m_actors[second]))
+				m_actors[first]->detectCollision(*m_actors[second]);
 	}
 }
+//-
 
 
 //Private Functions:
 
-bool PhysicsScene::invalidShapePair(PhysicsObject* actor1, PhysicsObject* actor2)
+bool PhysicsScene::isValidShapePair(PhysicsObject* actor1, PhysicsObject* actor2)
 {
-	
-	ShapeType shape1 = actor1->getShapeID(), shape2 = actor2->getShapeID();
-	return ((actor1->isStatic() && actor2->isStatic() && (shape1 != PLANE || shape2 != PLANE)) || (shape1 == PLANE && shape2 == PLANE) || shape2 == SPRING);
+	return m_validShapePairs[actor1->getShapeID()][actor2->getShapeID()];
 }
+
+void PhysicsScene::setUpValidShapePairs()
+{
+	for (int first = 0; first < SHAPE_COUNT; first++)
+	{
+		for (int second = 0; second < SHAPE_COUNT; second++)
+		{
+			if ((first == PLANE && second == PLANE))
+				m_validShapePairs[first][second] = false;
+			else
+				m_validShapePairs[first][second] = true;
+		}
+	}
+}
+//-
