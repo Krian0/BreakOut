@@ -9,10 +9,10 @@ Sphere::Sphere() : RigidBody(SPHERE, vec2(0, 0), vec2(0, 0), 0, 1, 1, false), m_
 	m_inertia = 0.5f * m_mass * m_radius * m_radius;
 	m_rotationalVelocity = 0;
 }
-Sphere::Sphere(vec2 position, vec2 velocity, float mass, float bounciness, float radius, bool makeStatic, vec4* colour) : 
+Sphere::Sphere(vec2 position, vec2 velocity, float mass, float bounciness, float radius, vec4 colour, bool makeStatic) : 
 	RigidBody(SPHERE, position, velocity, 0, mass, bounciness, makeStatic), m_radius(radius)
 {
-	m_colour = (colour != nullptr) ? *(colour) : vec4(0, 1, 0, 1);
+	m_colour = colour;
 	m_inertia = 0.5f * mass * radius * radius;
 	m_rotationalVelocity = 0;
 }

@@ -24,8 +24,9 @@ public:
 	virtual bool detectCollision(CData& data, Sphere& sphere) = 0;
 	virtual bool detectCollision(CData& data, Box& box) = 0;
 
-	ShapeType getShapeID() { return m_shapeID; }
-	bool isStatic() { return m_isStatic; }
+	void setStatic(bool value)	{ m_isStatic = value; }
+	bool isStatic()				{ return m_isStatic; }
+	ShapeType getShapeID()		{ return m_shapeID; }
 
 protected:
 	PhysicsObject(ShapeType shapeTypeID, bool isStatic) : m_shapeID(shapeTypeID), m_isStatic(isStatic) {}

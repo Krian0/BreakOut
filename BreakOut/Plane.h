@@ -7,8 +7,7 @@ class Plane : public PhysicsObject
 
 public:
 	Plane();
-	Plane(vec2 normal, float distance, float bounciness);
-	Plane(vec2 pointA, vec2 pointB, float bounciness);
+	Plane(vec2 normal, float distance, float bounciness, vec4 colour);
 	~Plane();
 
 

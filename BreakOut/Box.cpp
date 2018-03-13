@@ -5,29 +5,31 @@
 
 Box::Box() : RigidBody(BOX, vec2(0, 0), vec2(0, 0), 0, 1, 1, false), m_halfExtents(vec2(2, 2))
 {
-	m_inertia = 1.0f / 12.0f * 1 * ((2 * 2) + (2 * 2));
+	m_colour = vec4(0, 0, 1, 1);
+
+	m_inertia = 1.0f / 12.0f * 1 * dot(m_halfExtents, m_halfExtents);
 	m_rotationalVelocity = 0;
 
 	updateVariables();
-	m_cornerExtent[0] = vec2(-2,  2);
-	m_cornerExtent[1] = vec2( 2,  2);
-	m_cornerExtent[2] = vec2( 2, -2);
-	m_cornerExtent[3] = vec2(-2, -2);
+	m_cornerExtent[0] = vec2(-m_halfExtents.x, m_halfExtents.y);
+	m_cornerExtent[1] = m_halfExtents;
+	m_cornerExtent[2] = vec2(m_halfExtents.x, -m_halfExtents.y);
+	m_cornerExtent[3] = -m_halfExtents;
 }
 
-Box::Box(vec2 position, vec2 velocity, float rotation, float mass, float bounciness, float halfWidth, float halfHeight, bool makeStatic, vec4* colour) : 
-	RigidBody(BOX, position, velocity, rotation, mass, bounciness, makeStatic), m_halfExtents(vec2(halfWidth, halfHeight))
+Box::Box(vec2 position, vec2 velocity, float rotation, float mass, float bounciness, vec2 halfExtents, vec4 colour, bool makeStatic) :
+	RigidBody(BOX, position, velocity, rotation, mass, bounciness, makeStatic), m_halfExtents(halfExtents)
 {
-	m_colour = (colour != nullptr) ? *(colour) : vec4(0, 1, 1, 1);
+	m_colour = colour;
 
-	m_inertia = 1.0f / 12.0f * mass * ((halfWidth * halfWidth) + (halfHeight * halfHeight));
+	m_inertia = 1.0f / 12.0f * mass * dot(halfExtents, halfExtents);
 	m_rotationalVelocity = 0;
 
 	updateVariables();
-	m_cornerExtent[0] = vec2(-halfWidth,  halfHeight);
-	m_cornerExtent[1] = vec2( halfWidth,  halfHeight);
-	m_cornerExtent[2] = vec2( halfWidth, -halfHeight);
-	m_cornerExtent[3] = vec2(-halfWidth, -halfHeight);
+	m_cornerExtent[0] = vec2(-halfExtents.x, halfExtents.y);
+	m_cornerExtent[1] = halfExtents;
+	m_cornerExtent[2] = vec2(halfExtents.x, -halfExtents.y);
+	m_cornerExtent[3] = -halfExtents;
 }
 Box::~Box() {}
 
@@ -56,9 +58,14 @@ bool Box::detectCollision(CData& data, Plane& plane)
 
 bool Box::detectCollision(CData& data, Sphere& sphere)
 {
-	for (int i = 0; i < corner_Size; i++)
-		if (sphere.detectCollision(m_corners[i]))				//Do a sphere vs point check with each corner, set contact if it collides
-			data.onContact(getCornerLocal(i));
+	for (int i = 0; i < CORNER_SIZE; i++)
+		if (sphere.detectCollision(m_corners[i]))
+		{
+			//Do a sphere vs point check with each corner, set contact if it collides
+			float pen = sphere.getRadius() - length(m_corners[i] - sphere.getPosition());
+			vec2 normal = normalize(sphere.getPosition() - m_corners[i]);
+			data.onContact(getCornerLocal(i), normal, pen);
+		}
 
 	vec2 p(dot(sphere.getPosition() - m_position, m_localX), dot(sphere.getPosition() - m_position, m_localY));
 	float radius = sphere.getRadius();
@@ -149,6 +156,7 @@ bool Box::checkCorners(Box& otherBox, vec2& contactForce, CData& data)
 	return (data.getPenetration() != 0);
 }
 
+//Set the local X and Y axes, update the position of each corner
 void Box::updateVariables()
 {
 	m_localX = vec2(cosf(m_rotation), sinf(m_rotation));

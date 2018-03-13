@@ -3,23 +3,14 @@
 #include "Box.h"
 #include<glm\ext.hpp>
 
-Plane::Plane() : PhysicsObject(PLANE, true), m_normal(vec2(0, 1)), m_distanceFromOrigin(0), m_bounciness(1)
+Plane::Plane() : PhysicsObject(PLANE, true), m_normal(vec2(0, 1)), m_distanceFromOrigin(0), m_planeOrigin(m_normal), m_bounciness(1)
 { 
-	m_planeOrigin = m_normal * m_distanceFromOrigin;
 	m_colour = vec4(0, 0, 1, 1); 
 }
-Plane::Plane(vec2 normal, float distance, float bounciness) : PhysicsObject(PLANE, true), m_normal(normalize(normal)), m_distanceFromOrigin(distance), m_bounciness(bounciness)
+Plane::Plane(vec2 normal, float distance, float bounciness, vec4 colour) : 
+	PhysicsObject(PLANE, true), m_normal(normalize(normal)), m_distanceFromOrigin(distance), m_planeOrigin(normal * distance), m_bounciness(bounciness)
 { 
-	m_planeOrigin = m_normal * m_distanceFromOrigin;
-	m_colour = vec4(0, 0, 1, 1);
-}
-
-Plane::Plane(vec2 pointA, vec2 pointB, float bounciness) : PhysicsObject(PLANE, true), m_normal(pointB - pointA), m_distanceFromOrigin(dot(pointA, m_normal)), m_bounciness(bounciness)
-{
-	m_normal = getRightPerp();
-
-	m_planeOrigin = m_normal * m_distanceFromOrigin;
-	m_colour = vec4(0, 0, 1, 1);
+	m_colour = colour;
 }
 
 Plane::~Plane() {}
@@ -54,7 +45,8 @@ bool Plane::detectCollision(CData& data, Sphere& sphere)
 
 	if (sphere.getRadius() - sphereDistance <= 0) return false;
 
-	sphere.setPosition(sphere.getPosition() - m_normal * (sphere.getRadius() - sphereDistance));
+	float buffer = 1;
+	sphere.setPosition(sphere.getPosition() - m_normal * ((sphere.getRadius() + buffer) - sphereDistance));
 	return resolveCollision(&sphere, (data.getNormal() * sphere.getRadius()), sphere.getVelocity());
 }
 
@@ -63,7 +55,7 @@ bool Plane::detectCollision(CData& data, Box& box)
 	vec2 contactVelocity(0, 0);
 	float distToCentre = distanceToPoint(box.getPosition());
 
-	for (int i = 0; i < box.corner_Size; i++)
+	for (int i = 0; i < box.CORNER_SIZE; i++)
 	{
 		vec2 corner = box.getCorner(i), localCorner = box.getCornerLocal(i);
 		vec2 contactV = box.getVelocity() + box.getRotationalVelocity() * (-localCorner.y * box.getLocalXAxis() + localCorner.x * box.getLocalYAxis());

@@ -36,11 +36,11 @@ protected:
 
 	float m_rotationalVelocity;
 	float m_rotation;
-	float m_inertia;
 	float m_mass;
+	float m_inertia;
+	float m_bounciness;
 	float m_linearDrag;
 	float m_rotationalDrag;
-	float m_bounciness;
 
 	const double MIN_LINEAR_THRESHOLD = 0.08;
 	const double MIN_ROTATION_THRESHOLD = 0.01;

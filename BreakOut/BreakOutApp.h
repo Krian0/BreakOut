@@ -12,7 +12,8 @@
 #include <vector>
 using std::vector;
 
-class BreakOutApp : public aie::Application {
+class BreakOutApp : public aie::Application 
+{
 public:
 
 	BreakOutApp();
@@ -26,26 +27,25 @@ public:
 
 protected:
 
-	RigidBody* getRandomShape(glm::vec2 normal, float distance);
+	RigidBody* getRandomShape(vec2 normal, float distance);
 
 	aie::Renderer2D*	m_2dRenderer;
 	aie::Font*			m_font;
-	aie::Font*			m_fontSmall;
-	aie::Texture*		m_textureCannon;
+	aie::Texture*		m_cannon;
 
 	PhysicsScene*		m_physicsScene;
-
 	vector<RigidBody*>	m_userCreatedProjectiles;
 
-	glm::vec2 gravity	= glm::vec2(0, -9.8);
-	glm::vec2 zeroVec	= glm::vec2(0, 0);
-	glm::vec2 shootPos	= glm::vec2(-70, -22);
-	glm::vec2 cannonVec = glm::vec2(140, 160);
-	glm::vec2 mousePos	= zeroVec;
+	vec2 m_zeroVec			= vec2(0, 0);
+	vec2 m_mousePos			= m_zeroVec;
+	vec2 m_gravity			= vec2(0, -9.8);
+	vec2 m_shapeSpawnWorld	= vec2(-70, -22),	m_shapeSpawn = vec2(140, 160);
+
+	vec4 m_darkBlue = vec4(0, 0, 1, 0), m_lightBlue = vec4(0, 1, 1, 1), m_green = vec4(0, 1, 0, 1), m_blueblue = vec4(0, 0, 1, 1);
 
 	float m_timeStep	= 0.01f;
-	float m_clickDelay	= 0;
-	bool  m_canLeftClick	= true;
-	bool  m_canRightClick	= true;
 
+	bool  m_canLeftClick = true,			m_canRightClick = true;
+	float m_leftClickDelayTimer	= 0,		m_rightClickDelayTimer = 0;
+	const float LEFT_CLICK_DELAY = 0.6f,	RIGHT_CLICK_DELAY = 0.2f;
 };

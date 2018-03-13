@@ -5,7 +5,7 @@ class Sphere : public RigidBody
 {
 public:
 	Sphere();
-	Sphere(vec2 position, vec2 velocity, float mass, float bounciness, float radius, bool makeStatic = false, vec4* colour = nullptr);
+	Sphere(vec2 position, vec2 velocity, float mass, float bounciness, float radius, vec4 colour, bool makeStatic = false);
 	~Sphere();
 
 

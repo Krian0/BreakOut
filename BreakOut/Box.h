@@ -5,7 +5,7 @@ class Box : public RigidBody
 {
 public:
 	Box();
-	Box(vec2 position, vec2 velocity, float rotation, float mass, float bounciness, float halfWidth, float halfHeight, bool makeStatic = false, vec4* colour = nullptr);
+	Box(vec2 position, vec2 velocity, float rotation, float mass, float bounciness, vec2 halfExtents, vec4 colour, bool makeStatic = false);
 	~Box();
 
 
@@ -27,8 +27,7 @@ public:
 	vec2 getLocalYAxis()	{ return m_localY; }
 	vec2 getHalfExtents()	{ return m_halfExtents; }
 
-	const static int corner_Size = 4;
-	const static int axis_Size = 2;
+	const static int CORNER_SIZE = 4;
 
 private:
 	bool checkCorners(Box& box, vec2& contactForce, CData& data);
@@ -36,7 +35,7 @@ private:
 
 	vec2 m_localX;
 	vec2 m_localY;
-	vec2 m_corners[corner_Size];			//Corners in world space. Indices return clockwise corners starting from TopLeft.
-	vec2 m_cornerExtent[corner_Size];		//Stores the extents of each corner.
+	vec2 m_corners[CORNER_SIZE];			//Corners in world space. Indices return clockwise corners starting from TopLeft.
+	vec2 m_cornerExtent[CORNER_SIZE];		//Stores the extents of each corner.
 	vec2 m_halfExtents;
 };

@@ -48,15 +48,23 @@ bool RigidBody::rigidResolve(RigidBody& rigid, vec2 contact, vec2 normal)
 	float r1 = dot(contact - m_position, -perp);
 	float r2 = dot(contact - rigid.getPosition(), perp);
 
+	// work out how fast each object's contact point is moving into the normal - adding up linear and rotational velocities
 	float v1 = dot(m_velocity, normal) - r1 * m_rotationalVelocity;
 	float v2 = dot(rigid.getVelocity(), normal) + r2 * rigid.getRotationalVelocity();
 
+	// if the contact points are not moving into each other, we're done
 	if (v1 <= v2) return false;
 
+	// calculate "effective mass" of each object
+	// this takes into account how much the contact point will rotate away when the force is applied as well
+	// as the linear acceleration created
 	float mass1 = 1.0f / (1.0f / getMass() + (r1*r1) / getInertia());
 	float mass2 = 1.0f / (1.0f / rigid.getMass() + (r2*r2) / rigid.getInertia());
+
+	// this is the force required to stop the contact points moving into each other, with elasticity accounted for
 	vec2 force = getElasticity(&rigid) * mass1 * mass2 / (mass1 + mass2) * (v1 - v2) * normal;
 
+	// apply equal and opposite forces
 	applyForce(-force, contact - m_position);
 	rigid.applyForce(force, contact - rigid.getPosition());
 
